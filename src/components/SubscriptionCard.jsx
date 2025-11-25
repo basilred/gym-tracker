@@ -11,7 +11,9 @@ export default function SubscriptionCard({ sub, onDelete }) {
   const handleDelete = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    onDelete(sub.id);
+    if (window.confirm(`Вы уверены, что хотите удалить абонемент "${sub.name}"?`)) {
+      onDelete(sub.id);
+    }
     setMenuOpen(false);
   };
 
