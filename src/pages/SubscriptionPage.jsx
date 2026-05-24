@@ -4,7 +4,7 @@ import SubscriptionDetail from "../components/SubscriptionDetail";
 
 export default function SubscriptionPage() {
   const { id } = useParams();
-  const { getSubscription, addVisit } = useSubscriptions();
+  const { getSubscription, addVisit, removeVisit } = useSubscriptions();
   const sub = getSubscription(id);
 
   if (!sub) {
@@ -23,7 +23,7 @@ export default function SubscriptionPage() {
       <Link to="/" className="text-blue-500 underline text-sm">
         ← Назад
       </Link>
-      <SubscriptionDetail sub={sub} onAddVisit={addVisit} />
+      <SubscriptionDetail sub={sub} onAddVisit={addVisit} onDeleteVisit={removeVisit} />
     </div>
   );
 }

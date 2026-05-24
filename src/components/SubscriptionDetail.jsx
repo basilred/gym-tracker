@@ -1,6 +1,6 @@
 import VisitTimeline from "./VisitTimeline";
 
-export default function SubscriptionDetail({ sub, onAddVisit }) {
+export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit }) {
   const remaining = sub.totalSessions - sub.visits.length;
   return (
     <div className="max-w-md mx-auto bg-white rounded-2xl shadow p-6 mt-6">
@@ -35,7 +35,7 @@ export default function SubscriptionDetail({ sub, onAddVisit }) {
         </button>
       </div>
 
-      <VisitTimeline visits={sub.visits} />
+      <VisitTimeline visits={sub.visits} onDeleteVisit={(visitId) => onDeleteVisit(sub.id, visitId)} />
     </div>
   );
 }
