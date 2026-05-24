@@ -32,12 +32,12 @@ export function useSubscriptions() {
       prev.map((s) =>
         s.id === id && s.visits.length < s.totalSessions
           ? {
-              ...s,
-              visits: [
-                ...s.visits,
-                { id: crypto.randomUUID(), date: new Date().toISOString() },
-              ],
-            }
+            ...s,
+            visits: [
+              ...s.visits,
+              { id: crypto.randomUUID(), date: new Date().toISOString() },
+            ],
+          }
           : s
       )
     );

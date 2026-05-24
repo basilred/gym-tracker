@@ -1,16 +1,74 @@
-# React + Vite
+# Gym Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Приложение для отслеживания абонементов в спортзал. Позволяет создавать абонементы, фиксировать посещения и следить за оставшимся количеством занятий.
 
-Currently, two official plugins are available:
+## Возможности
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Создание абонементов с названием, количеством занятий и датой начала
+- Отметка посещений по каждому абонементу
+- Прогресс-бар с количеством оставшихся занятий
+- История посещений с датой и временем
+- Данные хранятся локально в браузере (localStorage)
+- PWA — работает офлайн после первой загрузки
+- Адаптивный дизайн (mobile-first)
 
-## React Compiler
+## Технологии
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [React 19](https://react.dev/)
+- [Vite 7](https://vite.dev/)
+- [React Router v7](https://reactrouter.com/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [vite-plugin-pwa](https://vite-pwa-org.netlify.app/)
 
-## Expanding the ESLint configuration
+## Установка и запуск
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+# Установка зависимостей
+npm install
+
+# Запуск в режиме разработки (http://localhost:5173)
+npm run dev
+
+# Сборка для продакшена
+npm run build
+
+# Предпросмотр собранного приложения
+npm run preview
+
+# Линтинг
+npm run lint
+```
+
+## Деплой
+
+Приложение развёрнуто на GitHub Pages: https://basilred.github.io/gym-tracker
+
+```bash
+# Деплой на GitHub Pages
+npm run deploy
+```
+
+## Структура проекта
+
+```
+src/
+├── components/
+│   ├── NewSubscriptionForm.jsx   # Форма создания нового абонемента
+│   ├── SubscriptionCard.jsx      # Карточка абонемента в списке
+│   ├── SubscriptionDetail.jsx    # Детальная страница абонемента
+│   ├── SubscriptionList.jsx      # Список всех абонементов
+│   └── VisitTimeline.jsx         # Таймлайн посещений
+├── hooks/
+│   └── useSubscriptions.js       # Хук для работы с абонементами (CRUD + localStorage)
+├── pages/
+│   ├── Home.jsx                  # Главная страница со списком
+│   └── SubscriptionPage.jsx      # Страница конкретного абонемента
+├── App.jsx                       # Роутинг
+├── App.css
+├── index.css
+└── main.jsx                      # Точка входа
+```
+
+## Лицензия
+
+MIT
