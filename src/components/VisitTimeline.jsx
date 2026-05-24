@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 const DELETE_THRESHOLD = 80;
 
-function SwipeableVisit({ visit, onDelete, isFirst }) {
+function SwipeableVisit({ visit, onDelete, isLast }) {
   const [offset, setOffset] = useState(0);
   const startXRef = useRef(0);
   const initialOffsetRef = useRef(0);
@@ -97,13 +97,17 @@ function SwipeableVisit({ visit, onDelete, isFirst }) {
 
   return (
     <div className="mb-4 relative group" ref={rowRef}>
-      {!isFirst && (
+      <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[18px] top-[7px]" />
+      {!isLast && (
         <div
           className="absolute w-px bg-gray-300"
-          style={{ left: "-16px", top: "-16px", height: "29px" }}
+          style={{
+            left: "calc(-18px + 5.5px)",
+            top: "13px",
+            bottom: "-29px",
+          }}
         />
       )}
-      <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[18px] top-[7px]" />
       <div className="overflow-hidden rounded-lg">
         <div className="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center bg-red-500 rounded-lg">
           <button
@@ -158,7 +162,7 @@ export default function VisitTimeline({ visits, onDeleteVisit }) {
         .slice()
         .reverse()
         .map((v, i) => (
-          <SwipeableVisit key={v.id} visit={v} onDelete={onDeleteVisit} isFirst={i === 0} />
+          <SwipeableVisit key={v.id} visit={v} onDelete={onDeleteVisit} isLast={i === visits.length - 1} />
         ))}
     </div>
   );
