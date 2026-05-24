@@ -96,28 +96,28 @@ function SwipeableVisit({ visit, onDelete }) {
   };
 
   return (
-    <div className="mb-4 relative overflow-hidden rounded-lg group" ref={rowRef}>
-      <div className="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center bg-red-500 rounded-r-lg">
-        <button
-          onClick={handleDelete}
-          className="w-full h-full text-white font-medium text-sm cursor-pointer"
+    <div className="mb-4 relative group" ref={rowRef}>
+      <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[18px] top-[7px]" />
+      <div className="overflow-hidden rounded-lg">
+        <div className="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center bg-red-500 rounded-lg">
+          <button
+            onClick={handleDelete}
+            className="w-full h-full text-white font-medium text-sm cursor-pointer"
+          >
+            Удалить
+          </button>
+        </div>
+        <div
+          className="relative bg-white"
+          style={{
+            transform: `translateX(-${offset}px)`,
+            transition:
+              offset === 0 || offset >= DELETE_THRESHOLD + 20
+                ? "transform 0.2s ease"
+                : "none",
+          }}
         >
-          Удалить
-        </button>
-      </div>
-      <div
-        className="relative bg-white"
-        style={{
-          transform: `translateX(-${offset}px)`,
-          transition:
-            offset === 0 || offset >= DELETE_THRESHOLD + 20
-              ? "transform 0.2s ease"
-              : "none",
-        }}
-      >
-        <div className="flex items-center justify-between pr-2">
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-blue-500 rounded-full -ml-[12px]" />
+          <div className="flex items-center justify-between pr-2">
             <p className="font-medium ml-2">
               {new Date(visit.date).toLocaleDateString()}{" "}
               <span className="text-sm text-gray-500">
@@ -127,14 +127,14 @@ function SwipeableVisit({ visit, onDelete }) {
                 })}
               </span>
             </p>
+            <button
+              onClick={handleDelete}
+              className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 px-2 text-lg leading-none transition-opacity cursor-pointer"
+              title="Удалить"
+            >
+              ✕
+            </button>
           </div>
-          <button
-            onClick={handleDelete}
-            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 px-2 text-lg leading-none transition-opacity cursor-pointer"
-            title="Удалить"
-          >
-            ✕
-          </button>
         </div>
       </div>
     </div>
