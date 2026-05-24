@@ -43,6 +43,16 @@ export function useSubscriptions() {
     );
   };
 
+  const removeVisit = (subId, visitId) => {
+    setSubscriptions((prev) =>
+      prev.map((s) =>
+        s.id === subId
+          ? { ...s, visits: s.visits.filter((v) => v.id !== visitId) }
+          : s
+      )
+    );
+  };
+
   const getSubscription = (id) => subscriptions.find((s) => s.id === id);
 
   return {
@@ -50,6 +60,7 @@ export function useSubscriptions() {
     addSubscription,
     deleteSubscription,
     addVisit,
+    removeVisit,
     getSubscription,
   };
 }
