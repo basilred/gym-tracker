@@ -53,6 +53,24 @@ export function useSubscriptions() {
     );
   };
 
+  const editVisit = (subId, visitId, newDate) => {
+    setSubscriptions((prev) =>
+      prev.map((s) => {
+        if (s.id !== subId) return s;
+        return {
+          ...s,
+          visits: s.visits.map((v) => {
+            if (v.id !== visitId) return v;
+            const originalDate = new Date(v.date);
+            const [year, month, day] = newDate.split("-").map(Number);
+            originalDate.setFullYear(year, month - 1, day);
+            return { ...v, date: originalDate.toISOString() };
+          }),
+        };
+      })
+    );
+  };
+
   const getSubscription = (id) => subscriptions.find((s) => s.id === id);
 
   return {
@@ -61,6 +79,7 @@ export function useSubscriptions() {
     deleteSubscription,
     addVisit,
     removeVisit,
+    editVisit,
     getSubscription,
   };
 }
