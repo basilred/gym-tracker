@@ -18,10 +18,12 @@ function SwipeableVisit({
   const initialOffsetRef = useRef(0);
   const offsetRef = useRef(0);
   const isDraggingRef = useRef(false);
+  const wasSwipingRef = useRef(false);
   const rowRef = useRef(null);
 
   const handleStart = useCallback((clientX) => {
     isDraggingRef.current = true;
+    wasSwipingRef.current = false;
     startXRef.current = clientX;
     initialOffsetRef.current = offsetRef.current;
   }, []);
@@ -29,6 +31,9 @@ function SwipeableVisit({
   const handleMove = useCallback((clientX) => {
     if (!isDraggingRef.current) return;
     const diff = startXRef.current - clientX;
+    if (Math.abs(diff) > 5) {
+      wasSwipingRef.current = true;
+    }
     const newOffset = Math.max(
       0,
       Math.min(initialOffsetRef.current + diff, DELETE_THRESHOLD + 40)
@@ -163,8 +168,14 @@ function SwipeableVisit({
               />
             ) : (
               <p
-                className="font-medium ml-2 cursor-pointer"
-                onClick={() => onStartEdit()}
+                className="font-medium ml-2 cursor-pointer text-sm py-0.5 border border-transparent"
+                onClick={() => {
+                  if (wasSwipingRef.current) {
+                    wasSwipingRef.current = false;
+                    return;
+                  }
+                  onStartEdit();
+                }}
               >
                 {new Date(visit.date).toLocaleDateString()}{" "}
                 <span className="text-sm text-gray-500">
