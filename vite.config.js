@@ -11,22 +11,22 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+        includeAssets: ['icon-180.webp'],
         manifest: {
           name: 'Gym Tracker',
           short_name: 'Gym Tracker',
           description: 'A simple app to track your gym subscriptions',
-          theme_color: '#fff',
+          theme_color: '#1e1e2e',
           icons: [
             {
-              src: 'pwa-192x192.png',
+              src: 'icon-192.webp',
               sizes: '192x192',
-              type: 'image/png',
+              type: 'image/webp',
             },
             {
-              src: 'pwa-512x512.png',
+              src: 'icon-512.webp',
               sizes: '512x512',
-              type: 'image/png',
+              type: 'image/webp',
             },
           ],
         }
