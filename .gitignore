@@ -25,3 +25,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# AIs
+.agent/
+.claude/
+.codex/
+.gemini/
+.opencode/
