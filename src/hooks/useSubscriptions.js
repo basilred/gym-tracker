@@ -4,12 +4,21 @@ const STORAGE_KEY = "gym_subscriptions";
 
 export function useSubscriptions() {
   const [subscriptions, setSubscriptions] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      return [];
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(subscriptions));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(subscriptions));
+    } catch {
+      console.warn("Не удалось сохранить данные в localStorage");
+    }
   }, [subscriptions]);
 
   const addSubscription = (name, totalSessions, startDate) => {
