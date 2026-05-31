@@ -1,0 +1,51 @@
+import { cn } from '@bem-react/classname';
+import VisitTimeline from './VisitTimeline';
+import type { Subscription } from '../types';
+import { calcProgress } from '../utils';
+
+const detail = cn('SubscriptionDetail');
+
+interface SubscriptionDetailProps {
+  sub: Subscription;
+  onAddVisit: (id: string) => void;
+  onDeleteVisit: (subId: string, visitId: string) => void;
+}
+
+export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit }: SubscriptionDetailProps) {
+  const remaining = sub.totalSessions - sub.visits.length;
+  const progress = calcProgress(sub.visits.length, sub.totalSessions);
+
+  return (
+    <div className={detail()}>
+      <h2 className={detail('Title')}>{sub.name}</h2>
+      <p className={detail('Date')}>
+        Начало: {new Date(sub.startDate).toLocaleDateString()}
+      </p>
+      <p className={detail('Remaining')}>
+        Осталось {remaining} из {sub.totalSessions} занятий
+      </p>
+
+      <div className={detail('ProgressBar')}>
+        <div
+          className={detail('ProgressFill')}
+          style={{ '--progress': `${progress}%` } as React.CSSProperties}
+        />
+      </div>
+
+      <div className={detail('Actions')}>
+        <button
+          onClick={() => onAddVisit(sub.id)}
+          disabled={remaining === 0}
+          className={detail('MarkBtn')}
+        >
+          Отметить занятие
+        </button>
+      </div>
+
+      <VisitTimeline
+        visits={sub.visits}
+        onDeleteVisit={(visitId: string) => onDeleteVisit(sub.id, visitId)}
+      />
+    </div>
+  );
+}

@@ -4,6 +4,12 @@
   margin-top: 1rem;
 }
 
+@media (min-width: 40rem) {
+  .SubscriptionList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .SubscriptionList-Empty {
   text-align: center;
   color: var(--color-text-secondary);
