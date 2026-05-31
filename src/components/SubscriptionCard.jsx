@@ -1,5 +1,8 @@
+import { cn } from "@bem-react/classname";
 import { Link } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+
+const card = cn("SubscriptionCard");
 
 export default function SubscriptionCard({ sub, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -36,16 +39,11 @@ export default function SubscriptionCard({ sub, onDelete }) {
   }, [menuRef]);
 
   return (
-    <div className="relative bg-white rounded-2xl shadow p-4 hover:shadow-md transition">
-      <div className="absolute top-2 right-2">
-        <button
-          onClick={toggleMenu}
-          className="p-1 rounded-full text-gray-500 hover:bg-gray-200"
-          aria-label="Options"
-        >
+    <div className={card()}>
+      <div className={card("Menu")}>
+        <button onClick={toggleMenu} aria-label="Options" className={card("MenuToggle")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -53,33 +51,27 @@ export default function SubscriptionCard({ sub, onDelete }) {
           </svg>
         </button>
         {menuOpen && (
-          <div
-            ref={menuRef}
-            className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10"
-          >
-            <button
-              onClick={handleDelete}
-              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-            >
+          <div ref={menuRef} className={card("MenuDropdown")}>
+            <button onClick={handleDelete} className={card("MenuDelete")}>
               Удалить
             </button>
           </div>
         )}
       </div>
-      <Link to={`/subscription/${sub.id}`} className="block">
-        <h3 className="text-lg font-semibold pr-8">{sub.name}</h3>
-        <p className="text-sm text-gray-500">
+      <Link to={`/subscription/${sub.id}`} className={card("Link")}>
+        <h3 className={card("Title")}>{sub.name}</h3>
+        <p className={card("Date")}>
           С {new Date(sub.startDate).toLocaleDateString()}
         </p>
 
-        <div className="mt-2 text-sm font-medium">
+        <div className={card("Stats")}>
           Осталось {remaining} из {sub.totalSessions} занятий
         </div>
 
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+        <div className={card("ProgressBar")}>
           <div
-            className="bg-blue-500 h-2 rounded-full transition-all"
-            style={{ width: `${progress}%` }}
+            className={card("ProgressFill")}
+            style={{ "--progress": `${progress}%` }}
           />
         </div>
       </Link>

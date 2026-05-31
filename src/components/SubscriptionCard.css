@@ -1,0 +1,104 @@
+.SubscriptionCard {
+  position: relative;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+  transition: box-shadow var(--transition-normal);
+}
+
+.SubscriptionCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.SubscriptionCard-Link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.SubscriptionCard-Menu {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.SubscriptionCard-MenuToggle {
+  padding: 0.25rem;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.SubscriptionCard-MenuToggle:hover {
+  background-color: var(--color-border);
+}
+
+.SubscriptionCard-MenuToggle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.SubscriptionCard-MenuDropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 10rem;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+}
+
+.SubscriptionCard-MenuDelete {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.SubscriptionCard-MenuDelete:hover {
+  background-color: var(--color-bg);
+}
+
+.SubscriptionCard-Title {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  padding-right: 2rem;
+}
+
+.SubscriptionCard-Date {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.SubscriptionCard-Stats {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.SubscriptionCard-ProgressBar {
+  width: 100%;
+  background-color: var(--color-border);
+  border-radius: var(--radius-full);
+  height: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.SubscriptionCard-ProgressFill {
+  background-color: var(--color-primary);
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  width: var(--progress, 0%);
+  transition: width var(--transition-normal);
+}

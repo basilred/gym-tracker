@@ -1,35 +1,34 @@
+import { cn } from "@bem-react/classname";
 import VisitTimeline from "./VisitTimeline";
+
+const detail = cn("SubscriptionDetail");
 
 export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit }) {
   const remaining = sub.totalSessions - sub.visits.length;
+  const progress = (sub.visits.length / sub.totalSessions) * 100;
+
   return (
-    <div className="max-w-md mx-auto bg-white rounded-2xl shadow p-6 mt-6">
-      <h2 className="text-xl font-semibold text-center">{sub.name}</h2>
-      <p className="text-center text-gray-500">
+    <div className={detail()}>
+      <h2 className={detail("Title")}>{sub.name}</h2>
+      <p className={detail("Date")}>
         Начало: {new Date(sub.startDate).toLocaleDateString()}
       </p>
-      <p className="text-2xl text-center font-bold mt-3">
+      <p className={detail("Remaining")}>
         Осталось {remaining} из {sub.totalSessions} занятий
       </p>
 
-      <div className="w-full bg-gray-200 rounded-full h-3 mt-4">
+      <div className={detail("ProgressBar")}>
         <div
-          className="bg-blue-500 h-3 rounded-full"
-          style={{
-            width: `${(sub.visits.length / sub.totalSessions) * 100}%`,
-          }}
+          className={detail("ProgressFill")}
+          style={{ "--progress": `${progress}%` }}
         />
       </div>
 
-      <div className="text-center mt-6">
+      <div className={detail("Actions")}>
         <button
           onClick={() => onAddVisit(sub.id)}
           disabled={remaining === 0}
-          className={`px-6 py-3 text-lg font-medium rounded-xl text-white transition ${
-            remaining === 0
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600"
-          }`}
+          className={detail("MarkBtn")}
         >
           Отметить занятие
         </button>

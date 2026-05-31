@@ -1,16 +1,19 @@
+import { cn } from "@bem-react/classname";
 import SubscriptionCard from "./SubscriptionCard";
+
+const list = cn("SubscriptionList");
 
 export default function SubscriptionList({ subscriptions, onDelete }) {
   if (subscriptions.length === 0) {
     return (
-      <p className="text-center text-gray-500 mt-6">
+      <p className={list("Empty")}>
         Пока нет абонементов. Создайте первый!
       </p>
     );
   }
 
   return (
-    <div className="grid gap-4 mt-4">
+    <div className={list()}>
       {subscriptions.map((sub) => (
         <SubscriptionCard key={sub.id} sub={sub} onDelete={onDelete} />
       ))}

@@ -1,42 +1,55 @@
+import { cn } from "@bem-react/classname";
 import { useState, useRef, useEffect, useCallback } from "react";
+
+const visit = cn("SwipeableVisit");
+const timeline = cn("VisitTimeline");
 
 const DELETE_THRESHOLD = 80;
 
-function SwipeableVisit({ visit, onDelete, isLast }) {
-  const [offset, setOffset] = useState(0);
+function SwipeableVisit({ visitData, onDelete, isLast }) {
+  const [isDragging, setIsDragging] = useState(false);
   const startXRef = useRef(0);
   const initialOffsetRef = useRef(0);
   const offsetRef = useRef(0);
-  const isDraggingRef = useRef(false);
+  const contentRef = useRef(null);
   const rowRef = useRef(null);
 
-  const handleStart = useCallback((clientX) => {
-    isDraggingRef.current = true;
-    startXRef.current = clientX;
-    initialOffsetRef.current = offsetRef.current;
-  }, []);
-
-  const handleMove = useCallback((clientX) => {
-    if (!isDraggingRef.current) return;
-    const diff = startXRef.current - clientX;
-    const newOffset = Math.max(
-      0,
-      Math.min(initialOffsetRef.current + diff, DELETE_THRESHOLD + 40)
-    );
-    offsetRef.current = newOffset;
-    setOffset(newOffset);
-  }, []);
-
-  const handleEnd = useCallback(() => {
-    isDraggingRef.current = false;
-    if (offsetRef.current > DELETE_THRESHOLD) {
-      offsetRef.current = DELETE_THRESHOLD + 20;
-      setOffset(DELETE_THRESHOLD + 20);
-    } else {
-      offsetRef.current = 0;
-      setOffset(0);
+  const updateOffset = useCallback((value) => {
+    offsetRef.current = value;
+    if (contentRef.current) {
+      contentRef.current.style.setProperty("--swipe-offset", String(value));
     }
   }, []);
+
+  const handleStart = useCallback(
+    (clientX) => {
+      startXRef.current = clientX;
+      initialOffsetRef.current = offsetRef.current;
+      setIsDragging(true);
+    },
+    []
+  );
+
+  const handleMove = useCallback(
+    (clientX) => {
+      const diff = startXRef.current - clientX;
+      const newOffset = Math.max(
+        0,
+        Math.min(initialOffsetRef.current + diff, DELETE_THRESHOLD + 40)
+      );
+      updateOffset(newOffset);
+    },
+    [updateOffset]
+  );
+
+  const handleEnd = useCallback(() => {
+    setIsDragging(false);
+    if (offsetRef.current > DELETE_THRESHOLD) {
+      updateOffset(DELETE_THRESHOLD + 20);
+    } else {
+      updateOffset(0);
+    }
+  }, [updateOffset]);
 
   useEffect(() => {
     const row = rowRef.current;
@@ -91,47 +104,28 @@ function SwipeableVisit({ visit, onDelete, isLast }) {
 
   const handleDelete = () => {
     if (window.confirm("Удалить это посещение?")) {
-      onDelete(visit.id);
+      onDelete(visitData.id);
     }
   };
 
+  const contentClass = visit("Content", { dragging: isDragging });
+
   return (
-    <div className="mb-4 relative group" ref={rowRef}>
-      {!isLast && (
-        <div
-          className="absolute w-px bg-gray-300"
-          style={{
-            left: "calc(-18px + 5.5px)",
-            top: "19px",
-            bottom: "-23px",
-          }}
-        />
-      )}
-      <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[18px] top-[7px]" />
-      <div className="overflow-hidden rounded-lg">
-        <div className="absolute right-0 top-0 bottom-0 w-24 flex items-center justify-center bg-red-500 rounded-lg">
-          <button
-            onClick={handleDelete}
-            className="w-full h-full text-white font-medium text-sm cursor-pointer"
-          >
+    <div className={visit()} ref={rowRef}>
+      {!isLast && <div className={visit("Connector")} />}
+      <div className={visit("Dot")} />
+      <div className={visit("Wrapper")}>
+        <div className={visit("DeleteBg")}>
+          <button onClick={handleDelete} className={visit("DeleteBtn")}>
             Удалить
           </button>
         </div>
-        <div
-          className="relative bg-white"
-          style={{
-            transform: `translateX(-${offset}px)`,
-            transition:
-              offset === 0 || offset >= DELETE_THRESHOLD + 20
-                ? "transform 0.2s ease"
-                : "none",
-          }}
-        >
-          <div className="flex items-center justify-between pr-2">
-            <p className="font-medium ml-2">
-              {new Date(visit.date).toLocaleDateString()}{" "}
-              <span className="text-sm text-gray-500">
-                {new Date(visit.date).toLocaleTimeString([], {
+        <div ref={contentRef} className={contentClass}>
+          <div className={visit("Row")}>
+            <p className={visit("Date")}>
+              {new Date(visitData.date).toLocaleDateString()}{" "}
+              <span className={visit("Time")}>
+                {new Date(visitData.date).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
@@ -139,7 +133,7 @@ function SwipeableVisit({ visit, onDelete, isLast }) {
             </p>
             <button
               onClick={handleDelete}
-              className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 px-2 text-lg leading-none transition-opacity cursor-pointer"
+              className={visit("HoverDelete")}
               title="Удалить"
             >
               ✕
@@ -153,17 +147,21 @@ function SwipeableVisit({ visit, onDelete, isLast }) {
 
 export default function VisitTimeline({ visits, onDeleteVisit }) {
   if (visits.length === 0) {
-    return <p className="text-center text-gray-500 mt-6">Пока нет посещений</p>;
+    return <p className={timeline("Empty")}>Пока нет посещений</p>;
   }
 
+  const reversed = visits.slice().reverse();
+
   return (
-    <div className="mt-6 pl-4 max-w-md mx-auto">
-      {visits
-        .slice()
-        .reverse()
-        .map((v, i) => (
-          <SwipeableVisit key={v.id} visit={v} onDelete={onDeleteVisit} isLast={i === visits.length - 1} />
-        ))}
+    <div className={timeline()}>
+      {reversed.map((v, i) => (
+        <SwipeableVisit
+          key={v.id}
+          visitData={v}
+          onDelete={onDeleteVisit}
+          isLast={i === reversed.length - 1}
+        />
+      ))}
     </div>
   );
 }
