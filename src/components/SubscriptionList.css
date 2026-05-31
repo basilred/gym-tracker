@@ -1,0 +1,11 @@
+.SubscriptionList {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.SubscriptionList-Empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-top: 1.5rem;
+}

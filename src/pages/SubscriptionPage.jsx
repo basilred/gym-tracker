@@ -1,6 +1,9 @@
+import { cn } from "@bem-react/classname";
 import { useParams, Link } from "react-router-dom";
 import { useSubscriptions } from "../hooks/useSubscriptions";
 import SubscriptionDetail from "../components/SubscriptionDetail";
+
+const page = cn("SubscriptionPage");
 
 export default function SubscriptionPage() {
   const { id } = useParams();
@@ -9,9 +12,9 @@ export default function SubscriptionPage() {
 
   if (!sub) {
     return (
-      <div className="p-6 text-center">
+      <div className={page("NotFound")}>
         <p>Абонемент не найден.</p>
-        <Link to="/" className="text-blue-500 underline">
+        <Link to="/" className={page("BackLink")}>
           ← Вернуться назад
         </Link>
       </div>
@@ -19,8 +22,8 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="p-6">
-      <Link to="/" className="text-blue-500 underline text-sm">
+    <div className={page()}>
+      <Link to="/" className={page("BackLink")}>
         ← Назад
       </Link>
       <SubscriptionDetail sub={sub} onAddVisit={addVisit} onDeleteVisit={removeVisit} />
