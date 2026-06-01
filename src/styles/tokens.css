@@ -24,4 +24,33 @@
 
   --transition-fast: 150ms ease;
   --transition-normal: 200ms ease;
+
+  --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1a1a2e;
+    --color-surface: #16213e;
+    --color-text: #e5e7eb;
+    --color-text-secondary: #9ca3af;
+    --color-text-muted: #6b7280;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #60a5fa;
+    --color-danger: #ef4444;
+    --color-danger-bg: #dc2626;
+    --color-disabled: #6b7280;
+    --color-border: #374151;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+
+    --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.4);
+  }
 }

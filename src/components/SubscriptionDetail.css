@@ -9,6 +9,12 @@
   margin-top: 1.5rem;
 }
 
+@media (min-width: 40rem) {
+  .SubscriptionDetail {
+    max-width: 40rem;
+  }
+}
+
 .SubscriptionDetail-Title {
   font-size: 1.25rem;
   line-height: 1.75rem;
