@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import VisitTimeline from './VisitTimeline';
 
@@ -8,9 +8,19 @@ const mockVisits = [
   { id: 'v2', date: '2026-01-18T14:30:00.000Z' },
 ];
 
-function renderTimeline(visits = mockVisits, onDeleteVisit = vi.fn()) {
+function renderTimeline(
+  visits = mockVisits,
+  onDeleteVisit = vi.fn(),
+  onEditVisit = vi.fn(),
+  startDate = '2026-01-15'
+) {
   return render(
-    <VisitTimeline visits={visits} onDeleteVisit={onDeleteVisit} />
+    <VisitTimeline
+      visits={visits}
+      onDeleteVisit={onDeleteVisit}
+      onEditVisit={onEditVisit}
+      startDate={startDate}
+    />
   );
 }
 
@@ -54,5 +64,58 @@ describe('VisitTimeline', () => {
     await user.click(deleteButtons[0]);
 
     expect(onDeleteVisit).not.toHaveBeenCalled();
+  });
+
+  describe('date editing', () => {
+    it('enters edit mode when date is clicked', async () => {
+      renderTimeline();
+      const user = userEvent.setup();
+
+      const dateElements = screen.getAllByText(/1\/18\/2026/);
+      await user.click(dateElements[0]);
+
+      const dateInput = screen.getByDisplayValue('2026-01-18');
+      expect(dateInput).toBeInTheDocument();
+      expect(dateInput.tagName).toBe('INPUT');
+    });
+
+    it('calls onEditVisit with visit id and new date on change', async () => {
+      const onEditVisit = vi.fn();
+      renderTimeline(mockVisits, vi.fn(), onEditVisit);
+      const user = userEvent.setup();
+
+      const dateElements = screen.getAllByText(/1\/18\/2026/);
+      await user.click(dateElements[0]);
+
+      const dateInput = screen.getByDisplayValue('2026-01-18');
+      fireEvent.change(dateInput, { target: { value: '2026-01-20' } });
+
+      expect(onEditVisit).toHaveBeenCalledWith(expect.any(String), '2026-01-20');
+    });
+
+    it('exits edit mode on blur', async () => {
+      renderTimeline();
+      const user = userEvent.setup();
+
+      const dateElements = screen.getAllByText(/1\/18\/2026/);
+      await user.click(dateElements[0]);
+
+      expect(screen.getByDisplayValue('2026-01-18')).toBeInTheDocument();
+      await user.click(document.body);
+
+      expect(screen.queryByDisplayValue('2026-01-18')).not.toBeInTheDocument();
+    });
+
+    it('respects min and max date bounds', async () => {
+      renderTimeline();
+      const user = userEvent.setup();
+
+      const dateElements = screen.getAllByText(/1\/16\/2026/);
+      await user.click(dateElements[0]);
+
+      const dateInput = screen.getByDisplayValue('2026-01-16');
+      expect(dateInput).toHaveAttribute('min', '2026-01-15');
+      expect(dateInput).toHaveAttribute('max', '2026-01-18');
+    });
   });
 });

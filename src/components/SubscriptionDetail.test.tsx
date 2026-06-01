@@ -13,12 +13,13 @@ const mockSub = {
   ],
 };
 
-function renderDetail(sub = mockSub, onAddVisit = vi.fn(), onDeleteVisit = vi.fn()) {
+function renderDetail(sub = mockSub, onAddVisit = vi.fn(), onDeleteVisit = vi.fn(), onEditVisit = vi.fn()) {
   return render(
     <SubscriptionDetail
       sub={sub}
       onAddVisit={onAddVisit}
       onDeleteVisit={onDeleteVisit}
+      onEditVisit={onEditVisit}
     />
   );
 }

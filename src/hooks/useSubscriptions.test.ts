@@ -150,6 +150,82 @@ describe('useSubscriptions', () => {
       expect(result.current.subscriptions[0].visits).toHaveLength(0);
     });
 
+    it('edits visit date preserving time', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('Test', 8, '2026-01-01');
+      });
+      const subId = result.current.subscriptions[0].id;
+
+      act(() => {
+        result.current.addVisit(subId);
+      });
+      const visitId = result.current.subscriptions[0].visits[0].id;
+      const visitDate = result.current.subscriptions[0].visits[0].date;
+      const originalTime = new Date(visitDate).toISOString().substring(11, 19);
+
+      act(() => {
+        result.current.editVisit(subId, visitId, '2026-06-15');
+      });
+
+      const updatedDate = result.current.subscriptions[0].visits[0].date;
+      const updated = new Date(updatedDate);
+      expect(updated.getFullYear()).toBe(2026);
+      expect(updated.getMonth()).toBe(5); // June is 5 (0-indexed)
+      expect(updated.getDate()).toBe(15);
+
+      const newTime = new Date(updatedDate).toISOString().substring(11, 19);
+      expect(newTime).toBe(originalTime);
+    });
+
+    it('editVisit does not affect other subscriptions', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('A', 8, '2026-01-01');
+        result.current.addSubscription('B', 8, '2026-02-01');
+      });
+      const subAId = result.current.subscriptions[0].id;
+      const subBId = result.current.subscriptions[1].id;
+
+      act(() => {
+        result.current.addVisit(subAId);
+      });
+      const visitId = result.current.subscriptions[0].visits[0].id;
+
+      act(() => {
+        result.current.editVisit(subBId, visitId, '2026-12-25');
+      });
+
+      const subADate = new Date(result.current.subscriptions[0].visits[0].date);
+      expect(subADate.getMonth()).not.toBe(11);
+    });
+
+    it('editVisit preserves other visits unchanged', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('Test', 8, '2026-01-01');
+      });
+      const subId = result.current.subscriptions[0].id;
+
+      act(() => {
+        result.current.addVisit(subId);
+        result.current.addVisit(subId);
+      });
+
+      const firstVisitId = result.current.subscriptions[0].visits[0].id;
+      const originalSecondDate = result.current.subscriptions[0].visits[1].date;
+
+      act(() => {
+        result.current.editVisit(subId, firstVisitId, '2026-06-15');
+      });
+
+      const secondDateAfter = result.current.subscriptions[0].visits[1].date;
+      expect(secondDateAfter).toBe(originalSecondDate);
+    });
+
     it('getSubscription returns subscription by id', () => {
       const { result } = renderHook(() => useSubscriptions());
 
