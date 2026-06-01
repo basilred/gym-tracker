@@ -49,12 +49,16 @@ npm run lint
 
 ## Деплой
 
-Приложение развёрнуто на GitHub Pages: [basilred.github.io/gym-tracker](https://basilred.github.io/gym-tracker)
+Приложение автоматически деплоится на GitHub Pages при создании релиза через CI/CD:
 
-```bash
-# Деплой на GitHub Pages
-npm run deploy
-```
+1. **Release-Please** — при пуше в `main` с [conventional commits](https://www.conventionalcommits.org/) создаёт release PR с CHANGELOG и версией
+2. **GitHub Actions** — при мерже release PR автоматически публикуется GitHub Release с git-тегом `vX.Y.Z` и запускается деплой на GitHub Pages
+
+Приложение доступно по адресу: [basilred.github.io/gym-tracker](https://basilred.github.io/gym-tracker)
+
+### Настройка
+
+В настройках репозитория (`Settings → Pages → Build and deployment`) должен быть выбран источник **GitHub Actions**.
 
 ## Структура проекта
 
