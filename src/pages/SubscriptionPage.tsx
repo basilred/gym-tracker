@@ -7,7 +7,7 @@ const page = cn('SubscriptionPage');
 
 export default function SubscriptionPage() {
   const { id } = useParams<{ id: string }>();
-  const { getSubscription, addVisit, removeVisit } = useSubscriptions();
+  const { getSubscription, addVisit, removeVisit, editVisit } = useSubscriptions();
   const sub = id ? getSubscription(id) : undefined;
 
   if (!sub) {
@@ -26,7 +26,7 @@ export default function SubscriptionPage() {
         <Link to="/" className={page('BackLink')} aria-label="Вернуться на главную">
           ← Назад
         </Link>
-      <SubscriptionDetail sub={sub} onAddVisit={addVisit} onDeleteVisit={removeVisit} />
+      <SubscriptionDetail sub={sub} onAddVisit={addVisit} onDeleteVisit={removeVisit} onEditVisit={editVisit} />
     </div>
   );
 }

@@ -9,9 +9,10 @@ interface SubscriptionDetailProps {
   sub: Subscription;
   onAddVisit: (id: string) => void;
   onDeleteVisit: (subId: string, visitId: string) => void;
+  onEditVisit: (subId: string, visitId: string, newDate: string) => void;
 }
 
-export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit }: SubscriptionDetailProps) {
+export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onEditVisit }: SubscriptionDetailProps) {
   const remaining = sub.totalSessions - sub.visits.length;
   const progress = calcProgress(sub.visits.length, sub.totalSessions);
 
@@ -45,6 +46,8 @@ export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit }: S
       <VisitTimeline
         visits={sub.visits}
         onDeleteVisit={(visitId: string) => onDeleteVisit(sub.id, visitId)}
+        onEditVisit={(visitId: string, newDate: string) => onEditVisit(sub.id, visitId, newDate)}
+        startDate={sub.startDate}
       />
     </div>
   );
