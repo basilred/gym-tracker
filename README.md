@@ -58,7 +58,8 @@ npm run lint
 
 ### Настройка
 
-В настройках репозитория (`Settings → Pages → Build and deployment`) должен быть выбран источник **GitHub Actions**.
+1. В настройках репозитория (`Settings → Pages → Build and deployment`) должен быть выбран источник **GitHub Actions**.
+2. В `Settings → Actions → General → Workflow permissions` включите **«Allow GitHub Actions to create and approve pull requests»** — это необходимо для автоматического создания release PR.
 
 ## Структура проекта
 
