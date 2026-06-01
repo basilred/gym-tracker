@@ -8,4 +8,4 @@
 
 ## 3. Verification
 
-- [ ] 3.1 Push a conventional commit (e.g. `fix: test release pipeline fix`) to `master` and verify release-please creates a release PR without Node.js 20 deprecation warning
+- [x] 3.1 Push a conventional commit (e.g. `fix: test release pipeline fix`) to `master` and verify release-please creates a release PR without Node.js 20 deprecation warning
