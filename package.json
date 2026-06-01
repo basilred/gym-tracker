@@ -10,9 +10,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@bem-react/classname": "^1.8.0",
@@ -36,7 +34,6 @@
     "eslint-plugin-jsx-a11y": "^6.0.0",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
-    "gh-pages": "^6.3.0",
     "globals": "^16.5.0",
     "jsdom": "^25.0.0",
     "typescript": "^5.0.0",
