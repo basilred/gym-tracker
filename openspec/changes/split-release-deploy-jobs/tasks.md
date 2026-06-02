@@ -4,4 +4,4 @@
 
 ## 2. Verification
 
-- [ ] 2.1 Push to master, verify: regular push creates no deployment entry; release PR merge creates deployment entry
+- [x] 2.1 Push to master, verify: regular push creates no deployment entry; release PR merge creates deployment entry
