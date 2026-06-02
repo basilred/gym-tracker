@@ -8,11 +8,45 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: googleapis/release-please-action@v5
+        id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+
+      - uses: actions/setup-node@v4
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+        if: ${{ steps.release.outputs.release_created }}
+
+      - run: npm run build
+        if: ${{ steps.release.outputs.release_created }}
+
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          path: dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+        if: ${{ steps.release.outputs.release_created }}
