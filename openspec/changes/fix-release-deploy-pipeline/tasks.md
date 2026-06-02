@@ -5,4 +5,4 @@
 
 ## 2. Verification
 
-- [ ] 2.1 Push a fix/feat commit to master, merge release PR, verify app is deployed to GitHub Pages
+- [x] 2.1 Push a fix/feat commit to master, merge release PR, verify app is deployed to GitHub Pages
