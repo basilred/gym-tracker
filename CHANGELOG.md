@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.0.0...gym-tracker-v1.0.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* unify release and deploy into single workflow ([#23](https://github.com/basilred/gym-tracker/issues/23)) ([a4f4b2f](https://github.com/basilred/gym-tracker/commit/a4f4b2fb6a9407cbc4257507bbf879a9a2b44405))
+
 ## 1.0.0 (2026-06-01)
 
 
