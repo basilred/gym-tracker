@@ -18,35 +18,36 @@ concurrency:
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
     steps:
       - uses: googleapis/release-please-action@v5
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+  deploy:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.release_created }}
 
       - uses: actions/setup-node@v4
-        if: ${{ steps.release.outputs.release_created }}
         with:
           node-version: 22
           cache: npm
 
       - run: npm ci
-        if: ${{ steps.release.outputs.release_created }}
 
       - run: npm run build
-        if: ${{ steps.release.outputs.release_created }}
 
       - uses: actions/upload-pages-artifact@v3
-        if: ${{ steps.release.outputs.release_created }}
         with:
           path: dist
 
       - id: deployment
         uses: actions/deploy-pages@v4
-        if: ${{ steps.release.outputs.release_created }}
