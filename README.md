@@ -5,9 +5,10 @@
 ## Возможности
 
 - **Абонементы** — создание с названием, количеством занятий и датой начала
-- **Посещения** — отметка и удаление визитов с датой и временем
+- **Посещения** — отметка визитов с датой и временем, редактирование даты, удаление через swipe
 - **Прогресс** — прогресс-бар с оставшимся количеством занятий
 - **История** — таймлайн посещений на детальной странице абонемента
+- **Тёмная тема** — автоматическое переключение по системным настройкам
 - **Локальное хранение** — данные в localStorage, никаких серверов
 - **PWA** — работает офлайн, можно установить на домашний экран
 - **Адаптивный дизайн** — mobile-first, удобно на любом устройстве
@@ -23,9 +24,11 @@
 ## Технологии
 
 - [React 19](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/) (strict-режим)
 - [Vite 7](https://vite.dev/)
 - [React Router v7](https://reactrouter.com/)
-- [Tailwind CSS v4](https://tailwindcss.com/)
+- [БЭМ-методология](https://ru.bem.info/) + CSS custom properties
+- [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/)
 - [vite-plugin-pwa](https://vite-pwa-org.netlify.app/)
 
 ## Установка и запуск
@@ -45,13 +48,19 @@ npm run preview
 
 # Линтинг
 npm run lint
+
+# Запуск тестов
+npm test
+
+# Запуск тестов с отчётом покрытия
+npm run test:coverage
 ```
 
 ## Деплой
 
 Приложение автоматически деплоится на GitHub Pages при создании релиза через CI/CD:
 
-1. **Release-Please** — при пуше в `main` с [conventional commits](https://www.conventionalcommits.org/) создаёт release PR с CHANGELOG и версией
+1. **Release-Please** — при пуше в `master` с [conventional commits](https://www.conventionalcommits.org/) создаёт release PR с CHANGELOG и версией
 2. **GitHub Actions** — при мерже release PR автоматически публикуется GitHub Release с git-тегом `vX.Y.Z` и запускается деплой на GitHub Pages
 
 Приложение доступно по адресу: [basilred.github.io/gym-tracker](https://basilred.github.io/gym-tracker)
@@ -66,20 +75,24 @@ npm run lint
 ```
 src/
 ├── components/
-│   ├── NewSubscriptionForm.jsx   # Форма создания абонемента
-│   ├── SubscriptionCard.jsx      # Карточка в списке
-│   ├── SubscriptionDetail.jsx    # Детальная страница абонемента
-│   ├── SubscriptionList.jsx      # Список всех абонементов
-│   └── VisitTimeline.jsx         # Таймлайн посещений
+│   ├── ErrorBoundary.tsx         # Предохранитель с возможностью retry
+│   ├── NewSubscriptionForm.tsx   # Форма создания абонемента
+│   ├── SubscriptionCard.tsx      # Карточка в списке
+│   ├── SubscriptionDetail.tsx    # Детальная страница абонемента
+│   ├── SubscriptionList.tsx      # Список всех абонементов
+│   └── VisitTimeline.tsx         # Таймлайн посещений
 ├── hooks/
-│   └── useSubscriptions.js       # CRUD-операции с localStorage
+│   └── useSubscriptions.ts       # CRUD-операции с localStorage
 ├── pages/
-│   ├── Home.jsx                  # Главная страница
-│   └── SubscriptionPage.jsx      # Страница одного абонемента
-├── App.jsx                       # Роутинг приложения
-├── App.css                       # Глобальные стили
+│   ├── Home.tsx                  # Главная страница
+│   └── SubscriptionPage.tsx      # Страница одного абонемента
+├── styles/
+│   └── tokens.css                # Дизайн-токены (светлая и тёмная темы)
+├── App.tsx                       # Роутинг приложения и ErrorBoundary
 ├── index.css                     # Сброс и базовые стили
-└── main.jsx                      # Точка входа
+├── main.tsx                      # Точка входа
+├── types.ts                      # TypeScript-интерфейсы
+└── utils.ts                      # Утилиты (расчёт прогресса)
 ```
 
 ## Лицензия
