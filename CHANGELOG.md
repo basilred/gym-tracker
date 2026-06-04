@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.0.2...gym-tracker-v1.0.3) (2026-06-04)
+
+
+### Bug Fixes
+
+* add semantic on-color tokens and fix dark theme contrast ([#29](https://github.com/basilred/gym-tracker/issues/29)) ([22b443f](https://github.com/basilred/gym-tracker/commit/22b443fac1ec66afe70063b3a46eeb62f03bd7cc)), closes [#21](https://github.com/basilred/gym-tracker/issues/21)
+
 ## [1.0.2](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.0.1...gym-tracker-v1.0.2) (2026-06-02)
 
 
