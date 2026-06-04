@@ -1,4 +1,6 @@
 import { Component, type ReactNode } from 'react';
+import { cn } from '@bem-react/classname';
+import './ErrorBoundary.css';
 
 interface Props {
   children: ReactNode;
@@ -27,11 +29,13 @@ export default class ErrorBoundary extends Component<Props, State> {
   };
 
   render(): ReactNode {
+    const boundary = cn('ErrorBoundary');
+
     if (this.state.hasError) {
       return (
-        <div>
-          <p>Что-то пошло не так</p>
-          <button onClick={this.handleRetry}>Попробовать снова</button>
+        <div className={boundary()}>
+          <p className={boundary('Message')}>Что-то пошло не так</p>
+          <button className={boundary('RetryBtn')} onClick={this.handleRetry}>Попробовать снова</button>
         </div>
       );
     }

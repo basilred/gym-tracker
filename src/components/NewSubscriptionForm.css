@@ -35,12 +35,13 @@
   padding: 0.5rem;
   border-radius: var(--radius-sm);
   margin-bottom: 0.75rem;
+  background-color: var(--color-input-bg);
 }
 
 .NewSubscriptionForm-SubmitBtn {
   width: 100%;
   background-color: var(--color-primary);
-  color: var(--color-surface);
+  color: var(--color-on-primary);
   padding: 0.5rem 0;
   border-radius: var(--radius-lg);
   transition: background-color var(--transition-fast);
