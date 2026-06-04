@@ -1,0 +1,25 @@
+.ErrorBoundary {
+  text-align: center;
+  padding: 2rem;
+}
+
+.ErrorBoundary-Message {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+}
+
+.ErrorBoundary-RetryBtn {
+  padding: 0.625rem 1.5rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  transition: background-color var(--transition-fast);
+}
+
+.ErrorBoundary-RetryBtn:hover {
+  background-color: var(--color-primary-hover);
+}

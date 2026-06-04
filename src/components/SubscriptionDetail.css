@@ -62,7 +62,7 @@
   line-height: 1.75rem;
   font-weight: 500;
   border-radius: var(--radius-xl);
-  color: var(--color-surface);
+  color: var(--color-on-primary);
   background-color: var(--color-primary);
   transition: background-color var(--transition-fast);
   border: none;
