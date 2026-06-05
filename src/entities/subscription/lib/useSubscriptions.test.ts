@@ -274,6 +274,91 @@ describe('useSubscriptions', () => {
     });
   });
 
+  describe('updateSubscription', () => {
+    it('updates subscription name', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('Old Name', 8, '2026-01-01');
+      });
+      const id = result.current.subscriptions[0].id;
+
+      act(() => {
+        result.current.updateSubscription(id, { name: 'New Name' });
+      });
+
+      expect(result.current.subscriptions[0].name).toBe('New Name');
+    });
+
+    it('preserves other fields on name update', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('Test', 8, '2026-01-01');
+      });
+      const id = result.current.subscriptions[0].id;
+      const original = result.current.subscriptions[0];
+
+      act(() => {
+        result.current.updateSubscription(id, { name: 'Updated' });
+      });
+
+      const updated = result.current.subscriptions[0];
+      expect(updated.name).toBe('Updated');
+      expect(updated.totalSessions).toBe(original.totalSessions);
+      expect(updated.startDate).toBe(original.startDate);
+      expect(updated.visits).toEqual(original.visits);
+    });
+
+    it('does nothing when id does not exist', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('Test', 8, '2026-01-01');
+      });
+
+      act(() => {
+        result.current.updateSubscription('nonexistent', { name: 'New' });
+      });
+
+      expect(result.current.subscriptions).toHaveLength(1);
+      expect(result.current.subscriptions[0].name).toBe('Test');
+    });
+
+    it('restores default name when empty string is passed', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('Original', 8, '2026-01-01');
+      });
+      const id = result.current.subscriptions[0].id;
+
+      act(() => {
+        result.current.updateSubscription(id, { name: '' });
+      });
+
+      expect(result.current.subscriptions[0].name).toBeTruthy();
+      expect(result.current.subscriptions[0].name).not.toBe('');
+    });
+
+    it('does not affect other subscriptions', () => {
+      const { result } = renderHook(() => useSubscriptions());
+
+      act(() => {
+        result.current.addSubscription('A', 8, '2026-01-01');
+        result.current.addSubscription('B', 8, '2026-02-01');
+      });
+      const idA = result.current.subscriptions[0].id;
+
+      act(() => {
+        result.current.updateSubscription(idA, { name: 'Updated A' });
+      });
+
+      expect(result.current.subscriptions[0].name).toBe('Updated A');
+      expect(result.current.subscriptions[1].name).toBe('B');
+    });
+  });
+
   describe('storage error handling', () => {
     it('handles quota exceeded gracefully', () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});

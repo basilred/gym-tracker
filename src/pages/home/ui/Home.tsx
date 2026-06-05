@@ -6,12 +6,12 @@ import CreateSubscriptionForm from '../../../features/create-subscription/ui/New
 const home = cn('Home');
 
 export default function Home() {
-  const { subscriptions, addSubscription, deleteSubscription } = useSubscriptions();
+  const { subscriptions, addSubscription, deleteSubscription, updateSubscription } = useSubscriptions();
 
   return (
     <div className={home()}>
       <h1 className={home('Title')}>Мои абонементы</h1>
-      <SubscriptionList subscriptions={subscriptions} onDelete={deleteSubscription} />
+      <SubscriptionList subscriptions={subscriptions} onDelete={deleteSubscription} onUpdate={updateSubscription} />
       <CreateSubscriptionForm onAdd={addSubscription} />
     </div>
   );

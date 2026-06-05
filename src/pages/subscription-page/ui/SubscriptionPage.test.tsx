@@ -64,4 +64,19 @@ describe('SubscriptionPage', () => {
 
     expect(screen.getByText(/Осталось 7 из 8 занятий/)).toBeInTheDocument();
   });
+
+  it('can edit subscription name inline', async () => {
+    seedSubscription();
+    renderPage('/subscription/sub-1');
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('Test Gym'));
+
+    const textbox = screen.getByRole('textbox');
+    await user.clear(textbox);
+    await user.type(textbox, 'Renamed Gym{Enter}');
+
+    expect(screen.getByText('Renamed Gym')).toBeInTheDocument();
+    expect(screen.queryByText('Test Gym')).not.toBeInTheDocument();
+  });
 });

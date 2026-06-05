@@ -74,6 +74,28 @@
   line-height: 1.75rem;
   font-weight: 600;
   padding-right: 2rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  cursor: text;
+}
+
+.SubscriptionCard-EditInput {
+  display: block;
+  width: 100%;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .SubscriptionCard-Date {

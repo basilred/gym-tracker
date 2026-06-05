@@ -134,6 +134,19 @@ export function useSubscriptions() {
     );
   };
 
+  const updateSubscription = (id: string, updates: Partial<Pick<Subscription, 'name'>>): void => {
+    setSubscriptions((prev) =>
+      prev.map((s) => {
+        if (s.id !== id) return s;
+        let name = updates.name;
+        if (!name) {
+          name = `Абонемент ${new Date().toLocaleDateString()}`;
+        }
+        return { ...s, ...updates, name };
+      })
+    );
+  };
+
   const getSubscription = (id: string): Subscription | undefined =>
     subscriptions.find((s) => s.id === id);
 
@@ -141,6 +154,7 @@ export function useSubscriptions() {
     subscriptions,
     addSubscription,
     deleteSubscription,
+    updateSubscription,
     addVisit,
     removeVisit,
     editVisit,

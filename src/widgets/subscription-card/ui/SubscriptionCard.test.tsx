@@ -15,10 +15,10 @@ const mockSub = {
   ],
 };
 
-function renderCard(sub = mockSub, onDelete = vi.fn()) {
+function renderCard(sub = mockSub, onDelete = vi.fn(), onUpdate = vi.fn()) {
   return render(
     <MemoryRouter>
-      <SubscriptionCard sub={sub} onDelete={onDelete} />
+      <SubscriptionCard sub={sub} onDelete={onDelete} onUpdate={onUpdate} />
     </MemoryRouter>
   );
 }
@@ -75,5 +75,68 @@ describe('SubscriptionCard', () => {
     const sub = { ...mockSub, totalSessions: 0, visits: [] };
     renderCard(sub);
     expect(screen.getByText(/Осталось 0 из 0 занятий/)).toBeInTheDocument();
+  });
+
+  describe('inline editing', () => {
+    it('shows textarea when clicking the name', async () => {
+      const user = userEvent.setup();
+      renderCard();
+
+      await user.click(screen.getByText('Test Gym'));
+
+      expect(screen.getByRole('textbox')).toBeInTheDocument();
+    });
+
+    it('saves on Enter and calls onUpdate', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderCard(mockSub, vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      const textbox = screen.getByRole('textbox');
+      await user.clear(textbox);
+      await user.type(textbox, 'Updated Name{Enter}');
+
+      expect(onUpdate).toHaveBeenCalledWith('sub-1', { name: 'Updated Name' });
+    });
+
+    it('cancels on Escape and reverts to original name', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderCard(mockSub, vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      const textbox = screen.getByRole('textbox');
+      await user.clear(textbox);
+      await user.type(textbox, 'Changed{Escape}');
+
+      expect(onUpdate).not.toHaveBeenCalled();
+      expect(screen.getByText('Test Gym')).toBeInTheDocument();
+    });
+
+    it('saves on blur', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderCard(mockSub, vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      const textbox = screen.getByRole('textbox');
+      await user.clear(textbox);
+      await user.type(textbox, 'Blur Save');
+      await user.click(document.body);
+
+      expect(onUpdate).toHaveBeenCalledWith('sub-1', { name: 'Blur Save' });
+    });
+
+    it('does not call onUpdate when name is unchanged', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderCard(mockSub, vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      await user.type(screen.getByRole('textbox'), '{Enter}');
+
+      expect(onUpdate).not.toHaveBeenCalled();
+    });
   });
 });

@@ -1,6 +1,6 @@
 import { cn } from '@bem-react/classname';
 import { Link } from 'react-router-dom';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import type { Subscription } from '../../../entities/subscription/types';
 import { calcProgress } from '../../../entities/subscription/lib/calcProgress';
 
@@ -9,14 +9,63 @@ const card = cn('SubscriptionCard');
 interface SubscriptionCardProps {
   sub: Subscription;
   onDelete: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<Pick<Subscription, 'name'>>) => void;
 }
 
-export default function SubscriptionCard({ sub, onDelete }: SubscriptionCardProps) {
+export default function SubscriptionCard({ sub, onDelete, onUpdate }: SubscriptionCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(sub.name);
   const menuRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const remaining = sub.totalSessions - sub.visits.length;
   const progress = calcProgress(sub.visits.length, sub.totalSessions);
+
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
+    }
+  }, []);
+
+  const startEditing = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditValue(sub.name);
+    setEditing(true);
+  };
+
+  const commitEdit = () => {
+    setEditing(false);
+    if (editValue !== sub.name) {
+      onUpdate(sub.id, { name: editValue });
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setEditValue(sub.name);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      commitEdit();
+    }
+    if (e.key === 'Escape') {
+      cancelEdit();
+    }
+  };
+
+  useEffect(() => {
+    if (editing && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.select();
+      autoResize();
+    }
+  }, [editing, autoResize]);
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -66,7 +115,24 @@ export default function SubscriptionCard({ sub, onDelete }: SubscriptionCardProp
         )}
       </div>
       <Link to={`/subscription/${sub.id}`} className={card('Link')}>
-        <h3 className={card('Title')}>{sub.name}</h3>
+        {editing ? (
+          <textarea
+            ref={textareaRef}
+            className={card('EditInput')}
+            value={editValue}
+            onChange={(e) => { setEditValue(e.target.value); autoResize(); }}
+            onKeyDown={handleKeyDown}
+            onBlur={commitEdit}
+            rows={1}
+            onClick={(e) => e.preventDefault()}
+          />
+        ) : (
+          <h3 className={card('Title')}>
+            <span className={card('TitleEditTrigger')} onClick={startEditing} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') startEditing(e); }} role="button" tabIndex={0}>
+              {sub.name}
+            </span>
+          </h3>
+        )}
         <p className={card('Date')}>
           С {new Date(sub.startDate).toLocaleDateString()}
         </p>
