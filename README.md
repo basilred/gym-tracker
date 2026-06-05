@@ -28,6 +28,7 @@
 - [Vite 7](https://vite.dev/)
 - [React Router v7](https://reactrouter.com/)
 - [БЭМ-методология](https://ru.bem.info/) + CSS custom properties
+- [FSD-light](https://feature-sliced.design/) — группировка кода по доменам
 - [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/)
 - [vite-plugin-pwa](https://vite-pwa-org.netlify.app/)
 
@@ -72,27 +73,33 @@ npm run test:coverage
 
 ## Структура проекта
 
+Проект организован по методологии **FSD-light** (Feature-Sliced Design): код группируется по доменам, а не по техническим слоям.
+
 ```
 src/
-├── components/
-│   ├── ErrorBoundary.tsx         # Предохранитель с возможностью retry
-│   ├── NewSubscriptionForm.tsx   # Форма создания абонемента
-│   ├── SubscriptionCard.tsx      # Карточка в списке
-│   ├── SubscriptionDetail.tsx    # Детальная страница абонемента
-│   ├── SubscriptionList.tsx      # Список всех абонементов
-│   └── VisitTimeline.tsx         # Таймлайн посещений
-├── hooks/
-│   └── useSubscriptions.ts       # CRUD-операции с localStorage
-├── pages/
-│   ├── Home.tsx                  # Главная страница
-│   └── SubscriptionPage.tsx      # Страница одного абонемента
-├── styles/
-│   └── tokens.css                # Дизайн-токены (светлая и тёмная темы)
-├── App.tsx                       # Роутинг приложения и ErrorBoundary
-├── index.css                     # Сброс и базовые стили
-├── main.tsx                      # Точка входа
-├── types.ts                      # TypeScript-интерфейсы
-└── utils.ts                      # Утилиты (расчёт прогресса)
+├── app/                          # Настройки, роутинг, точка входа
+│   ├── App.tsx                   # Роутер с ErrorBoundary-обёрткой
+│   └── main.tsx                  # Точка входа
+├── pages/                        # Композиция страниц из виджетов и фич
+│   ├── home/                     # Главная страница
+│   └── subscription-page/       # Страница одного абонемента
+├── widgets/                      # Самодостаточные блоки UI
+│   ├── subscription-card/        # Карточка абонемента в списке
+│   ├── subscription-detail/      # Детальная страница с прогрессом
+│   ├── subscription-list/        # Список всех абонементов
+│   └── visit-timeline/           # Таймлайн посещений со свайпом
+├── features/                     # Пользовательские действия
+│   ├── create-subscription/      # Форма создания абонемента
+│   └── mark-visit/               # Кнопка отметки посещения
+├── entities/                     # Бизнес-сущности
+│   └── subscription/
+│       ├── types.ts              # TypeScript-интерфейсы
+│       └── lib/
+│           ├── calcProgress.ts   # Расчёт прогресса
+│           └── useSubscriptions.ts # CRUD-операции с localStorage
+└── shared/                       # Переиспользуемое без бизнес-логики
+    ├── ui/ErrorBoundary/         # Предохранитель с retry
+    └── styles/tokens.css         # Дизайн-токены (светлая и тёмная темы)
 ```
 
 ## Лицензия

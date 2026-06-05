@@ -1,7 +1,7 @@
 import { cn } from '@bem-react/classname';
 import { useParams, Link } from 'react-router-dom';
-import { useSubscriptions } from '../hooks/useSubscriptions';
-import SubscriptionDetail from '../components/SubscriptionDetail';
+import { useSubscriptions } from '../../../entities/subscription';
+import { SubscriptionDetail } from '../../../widgets/subscription-detail';
 
 const page = cn('SubscriptionPage');
 

@@ -1,6 +1,6 @@
 import { cn } from '@bem-react/classname';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import type { Visit } from '../types';
+import type { Visit } from '../../../entities/subscription/types';
 
 const visit = cn('SwipeableVisit');
 const timeline = cn('VisitTimeline');
