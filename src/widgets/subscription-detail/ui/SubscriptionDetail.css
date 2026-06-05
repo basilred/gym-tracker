@@ -20,6 +20,29 @@
   line-height: 1.75rem;
   font-weight: 600;
   text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  cursor: text;
+}
+
+.SubscriptionDetail-EditInput {
+  display: block;
+  width: 100%;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .SubscriptionDetail-Date {

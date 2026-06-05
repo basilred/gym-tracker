@@ -13,13 +13,14 @@ const mockSub = {
   ],
 };
 
-function renderDetail(sub = mockSub, onAddVisit = vi.fn(), onDeleteVisit = vi.fn(), onEditVisit = vi.fn()) {
+function renderDetail(sub = mockSub, onAddVisit = vi.fn(), onDeleteVisit = vi.fn(), onEditVisit = vi.fn(), onUpdate = vi.fn()) {
   return render(
     <SubscriptionDetail
       sub={sub}
       onAddVisit={onAddVisit}
       onDeleteVisit={onDeleteVisit}
       onEditVisit={onEditVisit}
+      onUpdate={onUpdate}
     />
   );
 }
@@ -82,5 +83,68 @@ describe('SubscriptionDetail', () => {
     const fill = document.querySelector('.SubscriptionDetail-ProgressFill') as HTMLElement;
     const progress = fill.style.getPropertyValue('--progress');
     expect(progress).not.toBe('Infinity%');
+  });
+
+  describe('inline editing', () => {
+    it('shows textarea when clicking the name', async () => {
+      const user = userEvent.setup();
+      renderDetail();
+
+      await user.click(screen.getByText('Test Gym'));
+
+      expect(screen.getByRole('textbox')).toBeInTheDocument();
+    });
+
+    it('saves on Enter and calls onUpdate', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      const textbox = screen.getByRole('textbox');
+      await user.clear(textbox);
+      await user.type(textbox, 'Updated Name{Enter}');
+
+      expect(onUpdate).toHaveBeenCalledWith('sub-1', { name: 'Updated Name' });
+    });
+
+    it('cancels on Escape and reverts to original name', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      const textbox = screen.getByRole('textbox');
+      await user.clear(textbox);
+      await user.type(textbox, 'Changed{Escape}');
+
+      expect(onUpdate).not.toHaveBeenCalled();
+      expect(screen.getByText('Test Gym')).toBeInTheDocument();
+    });
+
+    it('saves on blur', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      const textbox = screen.getByRole('textbox');
+      await user.clear(textbox);
+      await user.type(textbox, 'Blur Save');
+      await user.click(document.body);
+
+      expect(onUpdate).toHaveBeenCalledWith('sub-1', { name: 'Blur Save' });
+    });
+
+    it('does not call onUpdate when name is unchanged', async () => {
+      const onUpdate = vi.fn();
+      const user = userEvent.setup();
+      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+
+      await user.click(screen.getByText('Test Gym'));
+      await user.type(screen.getByRole('textbox'), '{Enter}');
+
+      expect(onUpdate).not.toHaveBeenCalled();
+    });
   });
 });

@@ -44,6 +44,26 @@ describe('Home', () => {
     expect(screen.getByText('Test Gym')).toBeInTheDocument();
   });
 
+  it('can edit a subscription name inline', async () => {
+    renderHome();
+
+    const user = userEvent.setup();
+    const nameInput = screen.getByPlaceholderText('Название (опционально)');
+    await user.type(nameInput, 'Editable Gym');
+    await user.click(screen.getByRole('button', { name: 'Добавить' }));
+
+    expect(screen.getByText('Editable Gym')).toBeInTheDocument();
+
+    await user.click(screen.getByText('Editable Gym'));
+    const textboxes = screen.getAllByRole('textbox');
+    const cardTextarea = textboxes[0];
+    await user.clear(cardTextarea);
+    await user.type(cardTextarea, 'Renamed Gym{Enter}');
+
+    expect(screen.getByText('Renamed Gym')).toBeInTheDocument();
+    expect(screen.queryByText('Editable Gym')).not.toBeInTheDocument();
+  });
+
   it('can create and delete a subscription', async () => {
     window.confirm = vi.fn(() => true);
     renderHome();

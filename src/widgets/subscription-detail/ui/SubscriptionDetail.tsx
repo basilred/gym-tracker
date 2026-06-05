@@ -1,4 +1,5 @@
 import { cn } from '@bem-react/classname';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { VisitTimeline } from '../../visit-timeline';
 import { MarkVisitButton } from '../../../features/mark-visit';
 import type { Subscription } from '../../../entities/subscription/types';
@@ -11,15 +12,86 @@ interface SubscriptionDetailProps {
   onAddVisit: (id: string) => void;
   onDeleteVisit: (subId: string, visitId: string) => void;
   onEditVisit: (subId: string, visitId: string, newDate: string) => void;
+  onUpdate: (id: string, updates: Partial<Pick<Subscription, 'name'>>) => void;
 }
 
-export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onEditVisit }: SubscriptionDetailProps) {
+export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onEditVisit, onUpdate }: SubscriptionDetailProps) {
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(sub.name);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const remaining = sub.totalSessions - sub.visits.length;
   const progress = calcProgress(sub.visits.length, sub.totalSessions);
 
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
+    }
+  }, []);
+
+  const startEditing = () => {
+    setEditValue(sub.name);
+    setEditing(true);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      startEditing();
+    }
+  };
+
+  const commitEdit = () => {
+    setEditing(false);
+    if (editValue !== sub.name) {
+      onUpdate(sub.id, { name: editValue });
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setEditValue(sub.name);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      commitEdit();
+    }
+    if (e.key === 'Escape') {
+      cancelEdit();
+    }
+  };
+
+  useEffect(() => {
+    if (editing && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.select();
+      autoResize();
+    }
+  }, [editing, autoResize]);
+
   return (
     <div className={detail()}>
-      <h2 className={detail('Title')}>{sub.name}</h2>
+      {editing ? (
+        <textarea
+          ref={textareaRef}
+          className={detail('EditInput')}
+          value={editValue}
+          onChange={(e) => { setEditValue(e.target.value); autoResize(); }}
+          onKeyDown={handleKeyDown}
+          onBlur={commitEdit}
+          rows={1}
+        />
+      ) : (
+        <h2 className={detail('Title')}>
+          <span className={detail('TitleEditTrigger')} onClick={startEditing} onKeyDown={handleTitleKeyDown} role="button" tabIndex={0}>
+            {sub.name}
+          </span>
+        </h2>
+      )}
       <p className={detail('Date')}>
         Начало: {new Date(sub.startDate).toLocaleDateString()}
       </p>

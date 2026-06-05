@@ -21,10 +21,10 @@ const mockSubs = [
   },
 ];
 
-function renderList(subs = mockSubs, onDelete = vi.fn()) {
+function renderList(subs = mockSubs, onDelete = vi.fn(), onUpdate = vi.fn()) {
   return render(
     <MemoryRouter>
-      <SubscriptionList subscriptions={subs} onDelete={onDelete} />
+      <SubscriptionList subscriptions={subs} onDelete={onDelete} onUpdate={onUpdate} />
     </MemoryRouter>
   );
 }
