@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import SubscriptionPage from './pages/SubscriptionPage';
-import ErrorBoundary from './components/ErrorBoundary';
+import { Home } from '../pages/home';
+import { SubscriptionPage } from '../pages/subscription-page';
+import { ErrorBoundary } from '../shared/ui/ErrorBoundary';
 
 export default function App() {
   return (

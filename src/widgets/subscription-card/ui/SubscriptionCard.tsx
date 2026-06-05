@@ -1,8 +1,8 @@
 import { cn } from '@bem-react/classname';
 import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import type { Subscription } from '../types';
-import { calcProgress } from '../utils';
+import type { Subscription } from '../../../entities/subscription/types';
+import { calcProgress } from '../../../entities/subscription/lib/calcProgress';
 
 const card = cn('SubscriptionCard');
 

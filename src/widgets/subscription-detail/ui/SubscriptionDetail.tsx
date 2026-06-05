@@ -1,7 +1,8 @@
 import { cn } from '@bem-react/classname';
-import VisitTimeline from './VisitTimeline';
-import type { Subscription } from '../types';
-import { calcProgress } from '../utils';
+import { VisitTimeline } from '../../visit-timeline';
+import { MarkVisitButton } from '../../../features/mark-visit';
+import type { Subscription } from '../../../entities/subscription/types';
+import { calcProgress } from '../../../entities/subscription/lib/calcProgress';
 
 const detail = cn('SubscriptionDetail');
 
@@ -33,15 +34,7 @@ export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onE
         />
       </div>
 
-      <div className={detail('Actions')}>
-        <button
-          onClick={() => onAddVisit(sub.id)}
-          disabled={remaining === 0}
-          className={detail('MarkBtn')}
-        >
-          Отметить занятие
-        </button>
-      </div>
+      <MarkVisitButton subId={sub.id} remaining={remaining} onAddVisit={onAddVisit} />
 
       <VisitTimeline
         visits={sub.visits}

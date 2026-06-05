@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import SubscriptionList from './SubscriptionList';
+import type { Subscription } from '../../../entities/subscription/types';
 
 const mockSubs = [
   {

@@ -1,6 +1,6 @@
 import { cn } from '@bem-react/classname';
-import SubscriptionCard from './SubscriptionCard';
-import type { Subscription } from '../types';
+import { SubscriptionCard } from '../../subscription-card';
+import type { Subscription } from '../../../entities/subscription/types';
 
 const list = cn('SubscriptionList');
 
