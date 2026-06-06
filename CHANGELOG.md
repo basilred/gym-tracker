@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.0.3...gym-tracker-v1.1.0) (2026-06-05)
+
+
+### Features
+
+* make subscription name editable inline ([#28](https://github.com/basilred/gym-tracker/issues/28)) ([#34](https://github.com/basilred/gym-tracker/issues/34)) ([2422778](https://github.com/basilred/gym-tracker/commit/24227786c0969f3c02b95542fd9dbb2a8a8285e8))
+* reorganize project structure into FSD-light architecture ([#31](https://github.com/basilred/gym-tracker/issues/31)) ([f0d3179](https://github.com/basilred/gym-tracker/commit/f0d3179b25252512bacc602b4ddabc1c2ecaf765)), closes [#22](https://github.com/basilred/gym-tracker/issues/22)
+
+
+### Bug Fixes
+
+* normalize form element heights with appearance reset and custom select arrow ([#35](https://github.com/basilred/gym-tracker/issues/35)) ([6a96fe1](https://github.com/basilred/gym-tracker/commit/6a96fe1583f0295c2fdf2caa3ecaadebd3f5f910)), closes [#33](https://github.com/basilred/gym-tracker/issues/33)
+
 ## [1.0.3](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.0.2...gym-tracker-v1.0.3) (2026-06-04)
 
 
