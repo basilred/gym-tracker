@@ -106,13 +106,11 @@ export default function SubscriptionCard({ sub, onDelete, onUpdate }: Subscripti
             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
           </svg>
         </button>
-        {menuOpen && (
-          <div ref={menuRef} className={card('MenuDropdown')}>
-            <button onClick={handleDelete} className={card('MenuDelete')} aria-label="Удалить абонемент">
-              Удалить
-            </button>
-          </div>
-        )}
+        <div ref={menuRef} className={card('MenuDropdown', { expanded: menuOpen })}>
+          <button onClick={handleDelete} className={card('MenuDeleteBtn')} aria-label="Удалить абонемент">
+            Удалить
+          </button>
+        </div>
       </div>
       <Link to={`/subscription/${sub.id}`} className={card('Link')}>
         {editing ? (

@@ -1,6 +1,5 @@
 import { Component, type ReactNode } from 'react';
 import { cn } from '@bem-react/classname';
-import './ErrorBoundary.css';
 
 interface Props {
   children: ReactNode;
