@@ -1,0 +1,20 @@
+## ADDED Requirements
+
+### Requirement: SwipeableVisit has own BEM block and file
+
+The `SwipeableVisit` component SHALL be extracted from `VisitTimeline.tsx` into its own file with its own BEM block. It SHALL have its own CSS file separate from `VisitTimeline.css`.
+
+#### Scenario: SwipeableVisit is in own TSX file
+- **WHEN** the project source is inspected
+- **THEN** `SwipeableVisit` is defined in its own file at `src/widgets/visit-timeline/ui/SwipeableVisit.tsx`
+- **AND** `VisitTimeline.tsx` imports `SwipeableVisit` from that file
+
+#### Scenario: SwipeableVisit uses own CSS file
+- **WHEN** the application loads
+- **THEN** `SwipeableVisit.css` is imported from `main.tsx`
+- **AND** `SwipeableVisit.css` contains classes for the `SwipeableVisit` block
+
+#### Scenario: VisitTimeline.css only has VisitTimeline classes
+- **WHEN** `VisitTimeline.css` is inspected after the change
+- **THEN** it only contains `.VisitTimeline` and `.VisitTimeline-Empty` rules
+- **AND** it does not contain any `.SwipeableVisit-*` rules

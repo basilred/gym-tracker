@@ -1,6 +1,6 @@
 import { cn } from '@bem-react/classname';
 
-const detail = cn('SubscriptionDetail');
+const markBtn = cn('MarkVisitButton');
 
 interface MarkVisitButtonProps {
   subId: string;
@@ -10,11 +10,11 @@ interface MarkVisitButtonProps {
 
 export default function MarkVisitButton({ subId, remaining, onAddVisit }: MarkVisitButtonProps) {
   return (
-    <div className={detail('Actions')}>
+    <div className={markBtn('Actions')}>
       <button
         onClick={() => onAddVisit(subId)}
         disabled={remaining === 0}
-        className={detail('MarkBtn')}
+        className={markBtn('MarkBtn')}
       >
         Отметить занятие
       </button>

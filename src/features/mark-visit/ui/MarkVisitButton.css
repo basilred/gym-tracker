@@ -1,0 +1,26 @@
+.MarkVisitButton-Actions {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.MarkVisitButton-MarkBtn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-xl);
+  color: var(--color-on-primary);
+  background-color: var(--color-primary);
+  transition: background-color var(--transition-fast);
+  border: none;
+  cursor: pointer;
+}
+
+.MarkVisitButton-MarkBtn:not(:disabled):hover {
+  background-color: var(--color-primary-hover);
+}
+
+.MarkVisitButton-MarkBtn:disabled {
+  background-color: var(--color-disabled);
+  cursor: not-allowed;
+}
