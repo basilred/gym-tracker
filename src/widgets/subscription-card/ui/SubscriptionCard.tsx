@@ -1,8 +1,9 @@
 import { cn } from '@bem-react/classname';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Subscription } from '@/entities/subscription';
 import { calcProgress, useSubscriptions } from '@/entities/subscription';
+import { useInlineEdit } from '@/shared/hooks/useInlineEdit';
 
 const card = cn('SubscriptionCard');
 
@@ -11,61 +12,29 @@ interface SubscriptionCardProps {
 }
 
 export default function SubscriptionCard({ sub }: SubscriptionCardProps) {
-  const { deleteSubscription, updateSubscription, getSubscription } = useSubscriptions();
-  const currentSub = getSubscription(sub.id) ?? sub;
+  const { deleteSubscription, updateSubscription } = useSubscriptions();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [editValue, setEditValue] = useState(currentSub.name);
   const menuRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const {
+    editing,
+    editValue,
+    setEditValue,
+    textareaRef,
+    startEditing: startEdit,
+    commitEdit,
+    handleKeyDown,
+    autoResize,
+  } = useInlineEdit(sub.name, (name) => updateSubscription(sub.id, { name }));
 
   const remaining = sub.totalSessions - sub.visits.length;
   const progress = calcProgress(sub.visits.length, sub.totalSessions);
 
-  const autoResize = useCallback(() => {
-    const el = textareaRef.current;
-    if (el) {
-      el.style.height = 'auto';
-      el.style.height = `${el.scrollHeight}px`;
-    }
-  }, []);
-
   const startEditing = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setEditValue(sub.name);
-    setEditing(true);
+    startEdit();
   };
-
-  const commitEdit = () => {
-    setEditing(false);
-    if (editValue !== sub.name) {
-      updateSubscription(sub.id, { name: editValue });
-    }
-  };
-
-  const cancelEdit = () => {
-    setEditing(false);
-    setEditValue(sub.name);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      commitEdit();
-    }
-    if (e.key === 'Escape') {
-      cancelEdit();
-    }
-  };
-
-  useEffect(() => {
-    if (editing && textareaRef.current) {
-      textareaRef.current.focus();
-      textareaRef.current.select();
-      autoResize();
-    }
-  }, [editing, autoResize]);
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
