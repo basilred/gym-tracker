@@ -1,27 +1,25 @@
 import { cn } from '@bem-react/classname';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { VisitTimeline } from '../../visit-timeline';
-import { MarkVisitButton } from '../../../features/mark-visit';
-import type { Subscription } from '../../../entities/subscription/types';
-import { calcProgress } from '../../../entities/subscription/lib/calcProgress';
+import { VisitTimeline } from '@/widgets/visit-timeline';
+import { MarkVisitButton } from '@/features/mark-visit';
+import { useSubscriptions } from '@/entities/subscription';
+import { calcProgress } from '@/entities/subscription';
 
 const detail = cn('SubscriptionDetail');
 
 interface SubscriptionDetailProps {
-  sub: Subscription;
-  onAddVisit: (id: string) => void;
-  onDeleteVisit: (subId: string, visitId: string) => void;
-  onEditVisit: (subId: string, visitId: string, newDate: string) => void;
-  onUpdate: (id: string, updates: Partial<Pick<Subscription, 'name'>>) => void;
+  subId: string;
 }
 
-export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onEditVisit, onUpdate }: SubscriptionDetailProps) {
+export default function SubscriptionDetail({ subId }: SubscriptionDetailProps) {
+  const { getSubscription, removeVisit, editVisit, updateSubscription } = useSubscriptions();
+  const sub = getSubscription(subId);
   const [editing, setEditing] = useState(false);
-  const [editValue, setEditValue] = useState(sub.name);
+  const [editValue, setEditValue] = useState(sub?.name ?? '');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const remaining = sub.totalSessions - sub.visits.length;
-  const progress = calcProgress(sub.visits.length, sub.totalSessions);
+  const remaining = sub ? sub.totalSessions - sub.visits.length : 0;
+  const progress = sub ? calcProgress(sub.visits.length, sub.totalSessions) : 0;
 
   const autoResize = useCallback(() => {
     const el = textareaRef.current;
@@ -32,7 +30,7 @@ export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onE
   }, []);
 
   const startEditing = () => {
-    setEditValue(sub.name);
+    setEditValue(sub?.name ?? '');
     setEditing(true);
   };
 
@@ -45,14 +43,14 @@ export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onE
 
   const commitEdit = () => {
     setEditing(false);
-    if (editValue !== sub.name) {
-      onUpdate(sub.id, { name: editValue });
+    if (sub && editValue !== sub.name) {
+      updateSubscription(sub.id, { name: editValue });
     }
   };
 
   const cancelEdit = () => {
     setEditing(false);
-    setEditValue(sub.name);
+    setEditValue(sub?.name ?? '');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -72,6 +70,10 @@ export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onE
       autoResize();
     }
   }, [editing, autoResize]);
+
+  if (!sub) {
+    return null;
+  }
 
   return (
     <div className={detail()}>
@@ -106,12 +108,12 @@ export default function SubscriptionDetail({ sub, onAddVisit, onDeleteVisit, onE
         />
       </div>
 
-      <MarkVisitButton subId={sub.id} remaining={remaining} onAddVisit={onAddVisit} />
+      <MarkVisitButton subId={sub.id} />
 
       <VisitTimeline
         visits={sub.visits}
-        onDeleteVisit={(visitId: string) => onDeleteVisit(sub.id, visitId)}
-        onEditVisit={(visitId: string, newDate: string) => onEditVisit(sub.id, visitId, newDate)}
+        onDeleteVisit={(visitId: string) => removeVisit(sub.id, visitId)}
+        onEditVisit={(visitId: string, newDate: string) => editVisit(sub.id, visitId, newDate)}
         startDate={sub.startDate}
       />
     </div>

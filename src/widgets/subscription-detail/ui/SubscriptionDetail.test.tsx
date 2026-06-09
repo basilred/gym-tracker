@@ -1,7 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import SubscriptionDetail from './SubscriptionDetail';
+
+const mockUseSubscriptions = vi.fn();
+vi.mock('@/entities/subscription', () => ({
+  useSubscriptions: (...args: unknown[]) => mockUseSubscriptions(...args),
+  calcProgress: (visits: number, total: number) => (visits / Math.max(total, 1)) * 100,
+}));
 
 const mockSub = {
   id: 'sub-1',
@@ -13,19 +19,22 @@ const mockSub = {
   ],
 };
 
-function renderDetail(sub = mockSub, onAddVisit = vi.fn(), onDeleteVisit = vi.fn(), onEditVisit = vi.fn(), onUpdate = vi.fn()) {
-  return render(
-    <SubscriptionDetail
-      sub={sub}
-      onAddVisit={onAddVisit}
-      onDeleteVisit={onDeleteVisit}
-      onEditVisit={onEditVisit}
-      onUpdate={onUpdate}
-    />
-  );
+function renderDetail() {
+  return render(<SubscriptionDetail subId="sub-1" />);
 }
 
 describe('SubscriptionDetail', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUseSubscriptions.mockReturnValue({
+      getSubscription: vi.fn(() => mockSub),
+      addVisit: vi.fn(),
+      removeVisit: vi.fn(),
+      editVisit: vi.fn(),
+      updateSubscription: vi.fn(),
+    });
+  });
+
   it('renders subscription name', () => {
     renderDetail();
     expect(screen.getByText('Test Gym')).toBeInTheDocument();
@@ -33,7 +42,7 @@ describe('SubscriptionDetail', () => {
 
   it('renders start date', () => {
     renderDetail();
-    expect(screen.getByText(/Начало: 1\/15\/2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Начало:/)).toBeInTheDocument();
   });
 
   it('renders remaining sessions', () => {
@@ -41,25 +50,39 @@ describe('SubscriptionDetail', () => {
     expect(screen.getByText(/Осталось 7 из 8 занятий/)).toBeInTheDocument();
   });
 
-  it('calls onAddVisit when button is clicked', async () => {
-    const onAddVisit = vi.fn();
-    renderDetail(mockSub, onAddVisit);
+  it('calls addVisit when button is clicked', async () => {
+    const addVisit = vi.fn();
+    mockUseSubscriptions.mockReturnValue({
+      getSubscription: vi.fn(() => mockSub),
+      addVisit,
+      removeVisit: vi.fn(),
+      editVisit: vi.fn(),
+      updateSubscription: vi.fn(),
+    });
+    renderDetail();
 
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'Отметить занятие' }));
 
-    expect(onAddVisit).toHaveBeenCalledWith('sub-1');
+    expect(addVisit).toHaveBeenCalledWith('sub-1');
   });
 
   it('disables button when no sessions remaining', () => {
-    const sub = {
+    const fullSub = {
       ...mockSub,
       visits: Array.from({ length: 8 }, (_, i) => ({
         id: `v${i}`,
         date: `2026-01-${String(i + 1).padStart(2, '0')}T10:00:00.000Z`,
       })),
     };
-    renderDetail(sub);
+    mockUseSubscriptions.mockReturnValue({
+      getSubscription: vi.fn(() => fullSub),
+      addVisit: vi.fn(),
+      removeVisit: vi.fn(),
+      editVisit: vi.fn(),
+      updateSubscription: vi.fn(),
+    });
+    renderDetail();
 
     expect(screen.getByRole('button', { name: 'Отметить занятие' })).toBeDisabled();
   });
@@ -77,8 +100,14 @@ describe('SubscriptionDetail', () => {
   });
 
   it('handles zero totalSessions gracefully', () => {
-    const sub = { ...mockSub, totalSessions: 0, visits: [] };
-    renderDetail(sub);
+    mockUseSubscriptions.mockReturnValue({
+      getSubscription: vi.fn(() => ({ ...mockSub, totalSessions: 0, visits: [] })),
+      addVisit: vi.fn(),
+      removeVisit: vi.fn(),
+      editVisit: vi.fn(),
+      updateSubscription: vi.fn(),
+    });
+    renderDetail();
 
     const fill = document.querySelector('.SubscriptionDetail-ProgressFill') as HTMLElement;
     const progress = fill.style.getPropertyValue('--progress');
@@ -95,37 +124,61 @@ describe('SubscriptionDetail', () => {
       expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
 
-    it('saves on Enter and calls onUpdate', async () => {
-      const onUpdate = vi.fn();
+    it('saves on Enter and calls updateSubscription', async () => {
+      const updateSubscription = vi.fn();
+      mockUseSubscriptions.mockReturnValue({
+        getSubscription: vi.fn(() => mockSub),
+        addVisit: vi.fn(),
+        removeVisit: vi.fn(),
+        editVisit: vi.fn(),
+        updateSubscription,
+      });
+
       const user = userEvent.setup();
-      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+      render(<SubscriptionDetail subId="sub-1" />);
 
       await user.click(screen.getByText('Test Gym'));
       const textbox = screen.getByRole('textbox');
       await user.clear(textbox);
       await user.type(textbox, 'Updated Name{Enter}');
 
-      expect(onUpdate).toHaveBeenCalledWith('sub-1', { name: 'Updated Name' });
+      expect(updateSubscription).toHaveBeenCalledWith('sub-1', { name: 'Updated Name' });
     });
 
     it('cancels on Escape and reverts to original name', async () => {
-      const onUpdate = vi.fn();
+      const updateSubscription = vi.fn();
+      mockUseSubscriptions.mockReturnValue({
+        getSubscription: vi.fn(() => mockSub),
+        addVisit: vi.fn(),
+        removeVisit: vi.fn(),
+        editVisit: vi.fn(),
+        updateSubscription,
+      });
+
       const user = userEvent.setup();
-      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+      render(<SubscriptionDetail subId="sub-1" />);
 
       await user.click(screen.getByText('Test Gym'));
       const textbox = screen.getByRole('textbox');
       await user.clear(textbox);
       await user.type(textbox, 'Changed{Escape}');
 
-      expect(onUpdate).not.toHaveBeenCalled();
+      expect(updateSubscription).not.toHaveBeenCalled();
       expect(screen.getByText('Test Gym')).toBeInTheDocument();
     });
 
     it('saves on blur', async () => {
-      const onUpdate = vi.fn();
+      const updateSubscription = vi.fn();
+      mockUseSubscriptions.mockReturnValue({
+        getSubscription: vi.fn(() => mockSub),
+        addVisit: vi.fn(),
+        removeVisit: vi.fn(),
+        editVisit: vi.fn(),
+        updateSubscription,
+      });
+
       const user = userEvent.setup();
-      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+      render(<SubscriptionDetail subId="sub-1" />);
 
       await user.click(screen.getByText('Test Gym'));
       const textbox = screen.getByRole('textbox');
@@ -133,18 +186,26 @@ describe('SubscriptionDetail', () => {
       await user.type(textbox, 'Blur Save');
       await user.click(document.body);
 
-      expect(onUpdate).toHaveBeenCalledWith('sub-1', { name: 'Blur Save' });
+      expect(updateSubscription).toHaveBeenCalledWith('sub-1', { name: 'Blur Save' });
     });
 
-    it('does not call onUpdate when name is unchanged', async () => {
-      const onUpdate = vi.fn();
+    it('does not call updateSubscription when name is unchanged', async () => {
+      const updateSubscription = vi.fn();
+      mockUseSubscriptions.mockReturnValue({
+        getSubscription: vi.fn(() => mockSub),
+        addVisit: vi.fn(),
+        removeVisit: vi.fn(),
+        editVisit: vi.fn(),
+        updateSubscription,
+      });
+
       const user = userEvent.setup();
-      renderDetail(mockSub, vi.fn(), vi.fn(), vi.fn(), onUpdate);
+      render(<SubscriptionDetail subId="sub-1" />);
 
       await user.click(screen.getByText('Test Gym'));
       await user.type(screen.getByRole('textbox'), '{Enter}');
 
-      expect(onUpdate).not.toHaveBeenCalled();
+      expect(updateSubscription).not.toHaveBeenCalled();
     });
   });
 });

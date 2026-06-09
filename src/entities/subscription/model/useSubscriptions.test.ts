@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useSubscriptions } from './useSubscriptions';
+import { createElement, type ReactNode } from 'react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { useSubscriptions, SubscriptionProvider } from './useSubscriptions';
 
 const STORAGE_KEY = 'gym_subscriptions';
 
@@ -18,6 +19,13 @@ function getStorageData() {
   return [] as Record<string, unknown>[];
 }
 
+function renderSubscriptionHook() {
+  return renderHook(() => useSubscriptions(), {
+    wrapper: ({ children }: { children: ReactNode }) =>
+      createElement(SubscriptionProvider, null, children),
+  });
+}
+
 describe('useSubscriptions', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -25,7 +33,7 @@ describe('useSubscriptions', () => {
 
   describe('initialization', () => {
     it('returns empty array when localStorage is empty', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
       expect(result.current.subscriptions).toEqual([]);
     });
 
@@ -39,7 +47,7 @@ describe('useSubscriptions', () => {
       };
       setStorage([sub]);
 
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
       expect(result.current.subscriptions).toHaveLength(1);
       expect(result.current.subscriptions[0].name).toBe('Test Sub');
     });
@@ -47,14 +55,14 @@ describe('useSubscriptions', () => {
     it('returns empty array when JSON is invalid', () => {
       localStorage.setItem(STORAGE_KEY, 'not-valid-json{{{');
 
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
       expect(result.current.subscriptions).toEqual([]);
     });
   });
 
   describe('CRUD operations', () => {
     it('adds a new subscription with generated id', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Gym Pass', 12, '2026-06-01');
@@ -69,7 +77,7 @@ describe('useSubscriptions', () => {
     });
 
     it('uses default name when name is empty', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('', 8, '2026-06-01');
@@ -80,7 +88,7 @@ describe('useSubscriptions', () => {
     });
 
     it('deletes a subscription by id', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('A', 8, '2026-01-01');
@@ -95,7 +103,7 @@ describe('useSubscriptions', () => {
     });
 
     it('adds a visit to a subscription', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -112,7 +120,7 @@ describe('useSubscriptions', () => {
     });
 
     it('does not add visit when totalSessions reached', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 1, '2026-01-01');
@@ -131,7 +139,7 @@ describe('useSubscriptions', () => {
     });
 
     it('removes a visit by id', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -151,7 +159,7 @@ describe('useSubscriptions', () => {
     });
 
     it('edits visit date preserving time', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -172,7 +180,7 @@ describe('useSubscriptions', () => {
       const updatedDate = result.current.subscriptions[0].visits[0].date;
       const updated = new Date(updatedDate);
       expect(updated.getFullYear()).toBe(2026);
-      expect(updated.getMonth()).toBe(5); // June is 5 (0-indexed)
+      expect(updated.getMonth()).toBe(5);
       expect(updated.getDate()).toBe(15);
 
       const newTime = new Date(updatedDate).toISOString().substring(11, 19);
@@ -180,7 +188,7 @@ describe('useSubscriptions', () => {
     });
 
     it('editVisit does not affect other subscriptions', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('A', 8, '2026-01-01');
@@ -203,7 +211,7 @@ describe('useSubscriptions', () => {
     });
 
     it('editVisit preserves other visits unchanged', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -227,7 +235,7 @@ describe('useSubscriptions', () => {
     });
 
     it('getSubscription returns subscription by id', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -239,14 +247,14 @@ describe('useSubscriptions', () => {
     });
 
     it('getSubscription returns undefined for unknown id', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
       expect(result.current.getSubscription('nonexistent')).toBeUndefined();
     });
   });
 
   describe('localStorage persistence', () => {
     it('persists subscriptions to localStorage on changes', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -258,7 +266,7 @@ describe('useSubscriptions', () => {
     });
 
     it('removes deleted subscription from localStorage', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -276,7 +284,7 @@ describe('useSubscriptions', () => {
 
   describe('updateSubscription', () => {
     it('updates subscription name', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Old Name', 8, '2026-01-01');
@@ -291,7 +299,7 @@ describe('useSubscriptions', () => {
     });
 
     it('preserves other fields on name update', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -311,7 +319,7 @@ describe('useSubscriptions', () => {
     });
 
     it('does nothing when id does not exist', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');
@@ -326,7 +334,7 @@ describe('useSubscriptions', () => {
     });
 
     it('restores default name when empty string is passed', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Original', 8, '2026-01-01');
@@ -342,7 +350,7 @@ describe('useSubscriptions', () => {
     });
 
     it('does not affect other subscriptions', () => {
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('A', 8, '2026-01-01');
@@ -368,7 +376,7 @@ describe('useSubscriptions', () => {
         throw new Error('QuotaExceededError');
       });
 
-      const { result } = renderHook(() => useSubscriptions());
+      const { result } = renderSubscriptionHook();
 
       act(() => {
         result.current.addSubscription('Test', 8, '2026-01-01');

@@ -1,11 +1,8 @@
 import { cn } from '@bem-react/classname';
 import { useState } from 'react';
+import { useSubscriptions } from '@/entities/subscription';
 
 const form = cn('NewSubscriptionForm');
-
-interface NewSubscriptionFormProps {
-  onAdd: (name: string, total: number, startDate: string) => void;
-}
 
 function getTodayLocal(): string {
   const d = new Date();
@@ -15,14 +12,15 @@ function getTodayLocal(): string {
   return `${year}-${month}-${day}`;
 }
 
-export default function NewSubscriptionForm({ onAdd }: NewSubscriptionFormProps) {
+export default function NewSubscriptionForm() {
+  const { addSubscription } = useSubscriptions();
   const [name, setName] = useState('');
   const [total, setTotal] = useState(12);
   const [startDate, setStartDate] = useState(getTodayLocal);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd(name, total, startDate);
+    addSubscription(name, total, startDate);
     setName('');
   };
 

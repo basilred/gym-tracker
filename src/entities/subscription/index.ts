@@ -1,3 +1,3 @@
-export type { Subscription, Visit, SubscriptionStorage } from './types';
+export type { Subscription, Visit, SubscriptionStorage } from './model/types';
 export { calcProgress } from './lib/calcProgress';
-export { useSubscriptions } from './lib/useSubscriptions';
+export { useSubscriptions, SubscriptionProvider } from './model/useSubscriptions';

@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { SubscriptionProvider } from '@/entities/subscription';
 import SubscriptionPage from './SubscriptionPage';
 
 const STORAGE_KEY = 'gym_subscriptions';
@@ -30,10 +31,12 @@ describe('SubscriptionPage', () => {
   function renderPage(route: string) {
     return render(
       <MemoryRouter initialEntries={[route]}>
-        <Routes>
-          <Route path="/subscription/:id" element={<SubscriptionPage />} />
-          <Route path="/" element={<p>Home Page</p>} />
-        </Routes>
+        <SubscriptionProvider>
+          <Routes>
+            <Route path="/subscription/:id" element={<SubscriptionPage />} />
+            <Route path="/" element={<p>Home Page</p>} />
+          </Routes>
+        </SubscriptionProvider>
       </MemoryRouter>
     );
   }

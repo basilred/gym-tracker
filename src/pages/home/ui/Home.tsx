@@ -1,18 +1,18 @@
 import { cn } from '@bem-react/classname';
-import { useSubscriptions } from '../../../entities/subscription';
-import { SubscriptionList } from '../../../widgets/subscription-list';
-import CreateSubscriptionForm from '../../../features/create-subscription/ui/NewSubscriptionForm';
+import { SubscriptionList } from '@/widgets/subscription-list';
+import { CreateSubscriptionForm } from '@/features/create-subscription';
+import { useSubscriptions } from '@/entities/subscription';
 
 const home = cn('Home');
 
 export default function Home() {
-  const { subscriptions, addSubscription, deleteSubscription, updateSubscription } = useSubscriptions();
+  const { subscriptions } = useSubscriptions();
 
   return (
     <div className={home()}>
       <h1 className={home('Title')}>Мои абонементы</h1>
-      <SubscriptionList subscriptions={subscriptions} onDelete={deleteSubscription} onUpdate={updateSubscription} />
-      <CreateSubscriptionForm onAdd={addSubscription} />
+      <SubscriptionList subscriptions={subscriptions} />
+      <CreateSubscriptionForm />
     </div>
   );
 }

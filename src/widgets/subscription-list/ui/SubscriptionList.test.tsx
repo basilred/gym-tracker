@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { describe, it, expect } from 'vitest';
+import type { Subscription } from '@/entities/subscription';
+import { SubscriptionProvider } from '@/entities/subscription';
 import SubscriptionList from './SubscriptionList';
-import type { Subscription } from '../../../entities/subscription/types';
 
-const mockSubs = [
+const mockSubs: Subscription[] = [
   {
     id: 'sub-1',
     name: 'Gym A',
@@ -21,10 +22,12 @@ const mockSubs = [
   },
 ];
 
-function renderList(subs = mockSubs, onDelete = vi.fn(), onUpdate = vi.fn()) {
+function renderList(subs = mockSubs) {
   return render(
     <MemoryRouter>
-      <SubscriptionList subscriptions={subs} onDelete={onDelete} onUpdate={onUpdate} />
+      <SubscriptionProvider>
+        <SubscriptionList subscriptions={subs} />
+      </SubscriptionProvider>
     </MemoryRouter>
   );
 }
