@@ -1,9 +1,9 @@
 import { cn } from '@bem-react/classname';
-import { useState, useRef, useEffect, useCallback } from 'react';
 import { VisitTimeline } from '@/widgets/visit-timeline';
 import { MarkVisitButton } from '@/features/mark-visit';
 import { useSubscriptions } from '@/entities/subscription';
 import { calcProgress } from '@/entities/subscription';
+import { useInlineEdit } from '@/shared/hooks/useInlineEdit';
 
 const detail = cn('SubscriptionDetail');
 
@@ -14,25 +14,24 @@ interface SubscriptionDetailProps {
 export default function SubscriptionDetail({ subId }: SubscriptionDetailProps) {
   const { getSubscription, removeVisit, editVisit, updateSubscription } = useSubscriptions();
   const sub = getSubscription(subId);
-  const [editing, setEditing] = useState(false);
-  const [editValue, setEditValue] = useState(sub?.name ?? '');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const {
+    editing,
+    editValue,
+    setEditValue,
+    textareaRef,
+    startEditing,
+    commitEdit,
+    handleKeyDown,
+    autoResize,
+  } = useInlineEdit(sub?.name ?? '', (name) => {
+    if (sub) {
+      updateSubscription(sub.id, { name });
+    }
+  });
 
   const remaining = sub ? sub.totalSessions - sub.visits.length : 0;
   const progress = sub ? calcProgress(sub.visits.length, sub.totalSessions) : 0;
-
-  const autoResize = useCallback(() => {
-    const el = textareaRef.current;
-    if (el) {
-      el.style.height = 'auto';
-      el.style.height = `${el.scrollHeight}px`;
-    }
-  }, []);
-
-  const startEditing = () => {
-    setEditValue(sub?.name ?? '');
-    setEditing(true);
-  };
 
   const handleTitleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -40,36 +39,6 @@ export default function SubscriptionDetail({ subId }: SubscriptionDetailProps) {
       startEditing();
     }
   };
-
-  const commitEdit = () => {
-    setEditing(false);
-    if (sub && editValue !== sub.name) {
-      updateSubscription(sub.id, { name: editValue });
-    }
-  };
-
-  const cancelEdit = () => {
-    setEditing(false);
-    setEditValue(sub?.name ?? '');
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      commitEdit();
-    }
-    if (e.key === 'Escape') {
-      cancelEdit();
-    }
-  };
-
-  useEffect(() => {
-    if (editing && textareaRef.current) {
-      textareaRef.current.focus();
-      textareaRef.current.select();
-      autoResize();
-    }
-  }, [editing, autoResize]);
 
   if (!sub) {
     return null;
