@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import type { Subscription } from '../types';
+import { useState, useEffect, createContext, useContext, createElement, type ReactNode } from 'react';
+import type { Subscription } from './types';
 
 const STORAGE_KEY = 'gym_subscriptions';
 const SCHEMA_VERSION = 1;
@@ -68,7 +68,7 @@ function saveToStorage(subscriptions: Subscription[]): void {
   }
 }
 
-export function useSubscriptions() {
+function useSubscriptionsInternal() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(loadFromStorage);
 
   useEffect(() => {
@@ -160,4 +160,19 @@ export function useSubscriptions() {
     editVisit,
     getSubscription,
   };
+}
+
+type SubscriptionContextType = ReturnType<typeof useSubscriptionsInternal>;
+
+const SubscriptionCtx = createContext<SubscriptionContextType | null>(null);
+
+export function SubscriptionProvider({ children }: { children: ReactNode }) {
+  const value = useSubscriptionsInternal();
+  return createElement(SubscriptionCtx.Provider, { value }, children);
+}
+
+export function useSubscriptions(): SubscriptionContextType {
+  const ctx = useContext(SubscriptionCtx);
+  if (!ctx) throw new Error('useSubscriptions must be used within SubscriptionProvider');
+  return ctx;
 }

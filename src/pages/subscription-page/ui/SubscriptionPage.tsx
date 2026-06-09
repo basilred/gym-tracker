@@ -1,16 +1,16 @@
 import { cn } from '@bem-react/classname';
 import { useParams, Link } from 'react-router-dom';
-import { useSubscriptions } from '../../../entities/subscription';
-import { SubscriptionDetail } from '../../../widgets/subscription-detail';
+import { SubscriptionDetail } from '@/widgets/subscription-detail';
+import { useSubscriptions } from '@/entities/subscription';
 
 const page = cn('SubscriptionPage');
 
 export default function SubscriptionPage() {
   const { id } = useParams<{ id: string }>();
-  const { getSubscription, addVisit, removeVisit, editVisit, updateSubscription } = useSubscriptions();
+  const { getSubscription } = useSubscriptions();
   const sub = id ? getSubscription(id) : undefined;
 
-  if (!sub) {
+  if (!sub || !id) {
     return (
       <div className={page('NotFound')}>
         <p>Абонемент не найден.</p>
@@ -26,7 +26,7 @@ export default function SubscriptionPage() {
         <Link to="/" className={page('BackLink')} aria-label="Вернуться на главную">
           ← Назад
         </Link>
-      <SubscriptionDetail sub={sub} onAddVisit={addVisit} onDeleteVisit={removeVisit} onEditVisit={editVisit} onUpdate={updateSubscription} />
+      <SubscriptionDetail subId={id} />
     </div>
   );
 }

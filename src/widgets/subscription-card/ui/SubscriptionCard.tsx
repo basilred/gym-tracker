@@ -1,21 +1,21 @@
 import { cn } from '@bem-react/classname';
-import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import type { Subscription } from '../../../entities/subscription/types';
-import { calcProgress } from '../../../entities/subscription/lib/calcProgress';
+import { Link } from 'react-router-dom';
+import type { Subscription } from '@/entities/subscription';
+import { calcProgress, useSubscriptions } from '@/entities/subscription';
 
 const card = cn('SubscriptionCard');
 
 interface SubscriptionCardProps {
   sub: Subscription;
-  onDelete: (id: string) => void;
-  onUpdate: (id: string, updates: Partial<Pick<Subscription, 'name'>>) => void;
 }
 
-export default function SubscriptionCard({ sub, onDelete, onUpdate }: SubscriptionCardProps) {
+export default function SubscriptionCard({ sub }: SubscriptionCardProps) {
+  const { deleteSubscription, updateSubscription, getSubscription } = useSubscriptions();
+  const currentSub = getSubscription(sub.id) ?? sub;
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [editValue, setEditValue] = useState(sub.name);
+  const [editValue, setEditValue] = useState(currentSub.name);
   const menuRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -40,7 +40,7 @@ export default function SubscriptionCard({ sub, onDelete, onUpdate }: Subscripti
   const commitEdit = () => {
     setEditing(false);
     if (editValue !== sub.name) {
-      onUpdate(sub.id, { name: editValue });
+      updateSubscription(sub.id, { name: editValue });
     }
   };
 
@@ -71,7 +71,7 @@ export default function SubscriptionCard({ sub, onDelete, onUpdate }: Subscripti
     e.preventDefault();
     e.stopPropagation();
     if (window.confirm(`Вы уверены, что хотите удалить абонемент "${sub.name}"?`)) {
-      onDelete(sub.id);
+      deleteSubscription(sub.id);
     }
     setMenuOpen(false);
   };

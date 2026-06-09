@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { SubscriptionProvider } from '@/entities/subscription';
 import Home from './Home';
 
 describe('Home', () => {
@@ -12,7 +13,9 @@ describe('Home', () => {
   function renderHome() {
     return render(
       <MemoryRouter>
-        <Home />
+        <SubscriptionProvider>
+          <Home />
+        </SubscriptionProvider>
       </MemoryRouter>
     );
   }

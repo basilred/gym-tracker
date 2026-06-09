@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
 import App from './App';
 
 describe('App', () => {

@@ -1,5 +1,5 @@
-import { Component, type ReactNode } from 'react';
 import { cn } from '@bem-react/classname';
+import { Component, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;

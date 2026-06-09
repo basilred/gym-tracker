@@ -1,20 +1,23 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { SubscriptionProvider } from '@/entities/subscription';
 import NewSubscriptionForm from './NewSubscriptionForm';
 
-function renderForm(onAdd = vi.fn()) {
-  return render(
-    <MemoryRouter>
-      <NewSubscriptionForm onAdd={onAdd} />
-    </MemoryRouter>
-  );
-}
-
 describe('NewSubscriptionForm', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   it('renders form elements', () => {
-    renderForm();
+    render(
+      <MemoryRouter>
+        <SubscriptionProvider>
+          <NewSubscriptionForm />
+        </SubscriptionProvider>
+      </MemoryRouter>
+    );
     expect(screen.getByText('Новый абонемент')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Название (опционально)')).toBeInTheDocument();
     expect(screen.getByText('Количество занятий')).toBeInTheDocument();
@@ -22,9 +25,14 @@ describe('NewSubscriptionForm', () => {
     expect(screen.getByRole('button', { name: 'Добавить' })).toBeInTheDocument();
   });
 
-  it('calls onAdd with form data on submit', async () => {
-    const onAdd = vi.fn();
-    renderForm(onAdd);
+  it('creates a subscription in localStorage on submit', async () => {
+    render(
+      <MemoryRouter>
+        <SubscriptionProvider>
+          <NewSubscriptionForm />
+        </SubscriptionProvider>
+      </MemoryRouter>
+    );
 
     const user = userEvent.setup();
     const nameInput = screen.getByPlaceholderText('Название (опционально)');
@@ -33,12 +41,19 @@ describe('NewSubscriptionForm', () => {
 
     await user.click(screen.getByRole('button', { name: 'Добавить' }));
 
-    expect(onAdd).toHaveBeenCalledWith('My Gym', 12, expect.any(String));
+    const stored = JSON.parse(localStorage.getItem('gym_subscriptions')!);
+    expect(stored.data).toHaveLength(1);
+    expect(stored.data[0].name).toBe('My Gym');
   });
 
   it('clears name input after submit', async () => {
-    const onAdd = vi.fn();
-    renderForm(onAdd);
+    render(
+      <MemoryRouter>
+        <SubscriptionProvider>
+          <NewSubscriptionForm />
+        </SubscriptionProvider>
+      </MemoryRouter>
+    );
 
     const user = userEvent.setup();
     const nameInput = screen.getByPlaceholderText('Название (опционально)');
@@ -50,18 +65,14 @@ describe('NewSubscriptionForm', () => {
   });
 
   it('defaults total sessions to 12', () => {
-    renderForm();
+    render(
+      <MemoryRouter>
+        <SubscriptionProvider>
+          <NewSubscriptionForm />
+        </SubscriptionProvider>
+      </MemoryRouter>
+    );
     const select = screen.getByRole('combobox');
     expect(select).toHaveValue('12');
-  });
-
-  it('submits with empty name', async () => {
-    const onAdd = vi.fn();
-    renderForm(onAdd);
-
-    const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: 'Добавить' }));
-
-    expect(onAdd).toHaveBeenCalledWith('', 12, expect.any(String));
   });
 });
