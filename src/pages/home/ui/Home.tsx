@@ -10,9 +10,13 @@ export default function Home() {
 
   return (
     <div className={home()}>
-      <h1 className={home('Title')}>Мои абонементы</h1>
-      <SubscriptionList subscriptions={subscriptions} />
-      <CreateSubscriptionForm />
+      <header>
+        <h1 className={home('Title')}>Мои абонементы</h1>
+      </header>
+      <main>
+        <SubscriptionList subscriptions={subscriptions} />
+        <CreateSubscriptionForm />
+      </main>
     </div>
   );
 }

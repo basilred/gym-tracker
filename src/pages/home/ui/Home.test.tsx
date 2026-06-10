@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SubscriptionProvider } from '@/entities/subscription';
@@ -19,6 +20,12 @@ describe('Home', () => {
       </MemoryRouter>
     );
   }
+
+  it('has no accessibility violations', async () => {
+    const { container } = renderHome();
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
 
   it('renders the page title', () => {
     renderHome();
@@ -79,7 +86,7 @@ describe('Home', () => {
 
     expect(screen.getByText('Delete Me')).toBeInTheDocument();
 
-    const menuButton = screen.getByRole('button', { name: 'Options' });
+    const menuButton = screen.getByRole('button', { name: 'Меню' });
     await user.click(menuButton);
 
     const deleteButton = screen.getByRole('button', { name: 'Удалить абонемент' });

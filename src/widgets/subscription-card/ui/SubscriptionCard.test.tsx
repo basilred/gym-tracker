@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import SubscriptionCard from './SubscriptionCard';
@@ -39,6 +40,12 @@ describe('SubscriptionCard', () => {
     vi.clearAllMocks();
   });
 
+  it('has no accessibility violations', async () => {
+    const { container } = renderCard();
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
   it('renders subscription name', () => {
     renderCard();
     expect(screen.getByText('Test Gym')).toBeInTheDocument();
@@ -64,10 +71,27 @@ describe('SubscriptionCard', () => {
     const user = userEvent.setup();
     renderCard();
 
-    const menuButton = screen.getByRole('button', { name: 'Options' });
+    const menuButton = screen.getByRole('button', { name: 'Меню' });
     await user.click(menuButton);
 
     expect(screen.getByText('Удалить')).toBeInTheDocument();
+  });
+
+  it('closes menu on Escape and returns focus to toggle', async () => {
+    const user = userEvent.setup();
+    renderCard();
+
+    const menuButton = screen.getByRole('button', { name: 'Меню' });
+    await user.click(menuButton);
+
+    expect(screen.getByText('Удалить')).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Удалить')).not.toBeInTheDocument();
+    });
+    expect(document.activeElement).toBe(menuButton);
   });
 
   it('renders progress bar with correct width', () => {

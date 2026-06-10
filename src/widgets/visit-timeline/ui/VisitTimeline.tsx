@@ -22,7 +22,7 @@ export default function VisitTimeline({ visits, onDeleteVisit, onEditVisit, star
   const reversed = visits.slice().reverse();
 
   return (
-    <div className={timeline()}>
+    <ol className={timeline()}>
       {reversed.map((v, i) => {
         const oi = visits.length - 1 - i;
         const prevDate = oi === 0 ? startDate : visits[oi - 1].date.substring(0, 10);
@@ -31,23 +31,24 @@ export default function VisitTimeline({ visits, onDeleteVisit, onEditVisit, star
         const isEditing = editingVisitId === v.id;
 
         return (
-          <SwipeableVisit
-            key={v.id}
-            visitData={v}
-            onDelete={onDeleteVisit}
-            isLast={i === reversed.length - 1}
-            isEditing={isEditing}
-            onStartEdit={() => setEditingVisitId(v.id)}
-            onStopEdit={() => setEditingVisitId(null)}
-            onEdit={(visitId, newDate) => {
-              onEditVisit(visitId, newDate);
-              setEditingVisitId(null);
-            }}
-            minDate={prevDate}
-            maxDate={nextDate}
-          />
+          <li key={v.id} className={timeline('Item')}>
+            <SwipeableVisit
+              visitData={v}
+              onDelete={onDeleteVisit}
+              isLast={i === reversed.length - 1}
+              isEditing={isEditing}
+              onStartEdit={() => setEditingVisitId(v.id)}
+              onStopEdit={() => setEditingVisitId(null)}
+              onEdit={(visitId, newDate) => {
+                onEditVisit(visitId, newDate);
+                setEditingVisitId(null);
+              }}
+              minDate={prevDate}
+              maxDate={nextDate}
+            />
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 }

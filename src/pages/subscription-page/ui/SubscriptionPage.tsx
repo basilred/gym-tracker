@@ -23,10 +23,14 @@ export default function SubscriptionPage() {
 
   return (
     <div className={page()}>
+      <header>
         <Link to="/" className={page('BackLink')} aria-label="Вернуться на главную">
           ← Назад
         </Link>
-      <SubscriptionDetail subId={id} />
+      </header>
+      <main>
+        <SubscriptionDetail subId={id} />
+      </main>
     </div>
   );
 }

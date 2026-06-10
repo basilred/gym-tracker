@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SubscriptionProvider } from '@/entities/subscription';
@@ -23,6 +24,31 @@ describe('NewSubscriptionForm', () => {
     expect(screen.getByText('Количество занятий')).toBeInTheDocument();
     expect(screen.getByText('Дата начала')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Добавить' })).toBeInTheDocument();
+  });
+
+  it('has no accessibility violations', async () => {
+    const { container } = render(
+      <MemoryRouter>
+        <SubscriptionProvider>
+          <NewSubscriptionForm />
+        </SubscriptionProvider>
+      </MemoryRouter>
+    );
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  it('has label associated with the name input', () => {
+    render(
+      <MemoryRouter>
+        <SubscriptionProvider>
+          <NewSubscriptionForm />
+        </SubscriptionProvider>
+      </MemoryRouter>
+    );
+    const input = screen.getByLabelText('Название абонемента');
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute('id', 'subscription-name');
   });
 
   it('creates a subscription in localStorage on submit', async () => {

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect } from 'vitest';
 import type { Subscription } from '@/entities/subscription';
@@ -33,6 +34,20 @@ function renderList(subs = mockSubs) {
 }
 
 describe('SubscriptionList', () => {
+  it('renders as a semantic list', () => {
+    renderList();
+    const list = screen.getByRole('list');
+    expect(list).toBeInTheDocument();
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+  });
+
+  it('has no accessibility violations', async () => {
+    const { container } = renderList();
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
   it('renders empty state when no subscriptions', () => {
     renderList([]);
     expect(screen.getByText(/Пока нет абонементов/)).toBeInTheDocument();

@@ -1,5 +1,5 @@
 import { cn } from '@bem-react/classname';
-import { Component, type ReactNode } from 'react';
+import { Component, createRef, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -10,6 +10,8 @@ interface State {
 }
 
 export default class ErrorBoundary extends Component<Props, State> {
+  private retryBtnRef = createRef<HTMLButtonElement>();
+
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
@@ -23,6 +25,13 @@ export default class ErrorBoundary extends Component<Props, State> {
     console.error('Error caught by boundary:', error.message);
   }
 
+  componentDidUpdate(_prevProps: Props, prevState: State): void {
+    if (prevState.hasError && !this.state.hasError) {
+      const h1 = document.querySelector('h1');
+      h1?.focus({ preventScroll: true });
+    }
+  }
+
   handleRetry = (): void => {
     this.setState({ hasError: false });
   };
@@ -34,7 +43,7 @@ export default class ErrorBoundary extends Component<Props, State> {
       return (
         <div className={boundary()}>
           <p className={boundary('Message')}>Что-то пошло не так</p>
-          <button className={boundary('RetryBtn')} onClick={this.handleRetry}>Попробовать снова</button>
+          <button ref={this.retryBtnRef} className={boundary('RetryBtn')} onClick={this.handleRetry}>Попробовать снова</button>
         </div>
       );
     }
