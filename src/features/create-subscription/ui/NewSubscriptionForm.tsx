@@ -26,8 +26,9 @@ export default function NewSubscriptionForm() {
 
   return (
     <form onSubmit={handleSubmit} className={form()}>
-      <h3 className={form('Title')}>Новый абонемент</h3>
+      <h2 className={form('Title')}>Новый абонемент</h2>
 
+      <label htmlFor="subscription-name" className={form('Label')}>Название абонемента</label>
       <input
         id="subscription-name"
         type="text"

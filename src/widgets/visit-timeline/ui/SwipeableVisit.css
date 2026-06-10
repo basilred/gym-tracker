@@ -58,6 +58,17 @@
   transition: transform 0.2s ease;
 }
 
+.SwipeableVisit-Content::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 0.5rem;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.03));
+  pointer-events: none;
+}
+
 .SwipeableVisit-Content_dragging {
   transition: none;
 }
@@ -116,7 +127,8 @@
   border: none;
 }
 
-.SwipeableVisit:hover .SwipeableVisit-HoverDeleteBtn {
+.SwipeableVisit:hover .SwipeableVisit-HoverDeleteBtn,
+.SwipeableVisit .SwipeableVisit-HoverDeleteBtn:focus-visible {
   opacity: 1;
 }
 

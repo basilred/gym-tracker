@@ -161,12 +161,13 @@ export default function SwipeableVisit({
 
   const contentClass = visit('Content', { dragging: isDragging });
 
+  /* eslint-disable jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-noninteractive-element-interactions */
   return (
     <div
       className={visit()}
       ref={rowRef}
       tabIndex={0}
-      role="button"
+      role="group"
       aria-label={`Посещение от ${new Date(visitData.date).toLocaleDateString()}`}
       onKeyDown={handleKeyDown}
     >
@@ -227,4 +228,5 @@ export default function SwipeableVisit({
       </div>
     </div>
   );
+  /* eslint-enable jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-noninteractive-element-interactions */
 }

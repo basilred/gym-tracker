@@ -70,6 +70,7 @@ function saveToStorage(subscriptions: Subscription[]): void {
 
 function useSubscriptionsInternal() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(loadFromStorage);
+  const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => {
     saveToStorage(subscriptions);
@@ -84,10 +85,12 @@ function useSubscriptionsInternal() {
       visits: [],
     };
     setSubscriptions((prev) => [...prev, newSub]);
+    setAnnouncement('Абонемент создан');
   };
 
   const deleteSubscription = (id: string): void => {
     setSubscriptions((prev) => prev.filter((s) => s.id !== id));
+    setAnnouncement('Абонемент удалён');
   };
 
   const addVisit = (id: string): void => {
@@ -104,6 +107,7 @@ function useSubscriptionsInternal() {
           : s
       )
     );
+    setAnnouncement('Посещение отмечено');
   };
 
   const removeVisit = (subId: string, visitId: string): void => {
@@ -152,6 +156,7 @@ function useSubscriptionsInternal() {
 
   return {
     subscriptions,
+    announcement,
     addSubscription,
     deleteSubscription,
     updateSubscription,

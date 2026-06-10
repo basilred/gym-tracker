@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import { describe, it, expect, vi } from 'vitest';
 import VisitTimeline from './VisitTimeline';
 
@@ -25,6 +26,19 @@ function renderTimeline(
 }
 
 describe('VisitTimeline', () => {
+  it('renders as a semantic ordered list', () => {
+    renderTimeline();
+    expect(screen.getByRole('list')).toBeInTheDocument();
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+  });
+
+  it('has no accessibility violations', async () => {
+    const { container } = renderTimeline();
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
   it('renders empty state when no visits', () => {
     renderTimeline([]);
     expect(screen.getByText('Пока нет посещений')).toBeInTheDocument();

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SubscriptionProvider } from '@/entities/subscription';
@@ -40,6 +41,13 @@ describe('SubscriptionPage', () => {
       </MemoryRouter>
     );
   }
+
+  it('has no accessibility violations when subscription found', async () => {
+    seedSubscription();
+    const { container } = renderPage('/subscription/sub-1');
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
 
   it('shows not found message for missing subscription', () => {
     renderPage('/subscription/nonexistent');

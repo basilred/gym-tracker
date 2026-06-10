@@ -18,10 +18,10 @@ export default function SubscriptionList({ subscriptions }: SubscriptionListProp
   }
 
   return (
-    <div className={list()}>
+    <ul className={list()}>
       {subscriptions.map((sub) => (
-        <SubscriptionCard key={sub.id} sub={sub} />
+        <li key={sub.id} className={list('Item')}><SubscriptionCard sub={sub} /></li>
       ))}
-    </div>
+    </ul>
   );
 }
