@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.1.0...gym-tracker-v1.2.0) (2026-06-10)
+
+
+### Features
+
+* implement comprehensive WCAG AA accessibility improvements ([#46](https://github.com/basilred/gym-tracker/issues/46)) ([b7337d4](https://github.com/basilred/gym-tracker/commit/b7337d4475ee68de9ee7793b9cb55cefb390e236)), closes [#45](https://github.com/basilred/gym-tracker/issues/45)
+
+
+### Bug Fixes
+
+* stabilize date-dependent tests by mocking toLocaleDateString in test setup ([#37](https://github.com/basilred/gym-tracker/issues/37)) ([ca9a9d8](https://github.com/basilred/gym-tracker/commit/ca9a9d8ec62448bd0651c117448b55123a708260))
+
 ## [1.1.0](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.0.3...gym-tracker-v1.1.0) (2026-06-05)
 
 
