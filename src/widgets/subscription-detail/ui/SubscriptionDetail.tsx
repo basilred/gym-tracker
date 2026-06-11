@@ -1,4 +1,5 @@
 import { cn } from '@bem-react/classname';
+import { SubscriptionStats } from '@/widgets/subscription-stats';
 import { VisitTimeline } from '@/widgets/visit-timeline';
 import { MarkVisitButton } from '@/features/mark-visit';
 import { useSubscriptions } from '@/entities/subscription';
@@ -85,6 +86,8 @@ export default function SubscriptionDetail({ subId }: SubscriptionDetailProps) {
         onEditVisit={(visitId: string, newDate: string) => editVisit(sub.id, visitId, newDate)}
         startDate={sub.startDate}
       />
+
+      <SubscriptionStats subscription={sub} />
     </div>
   );
 }
