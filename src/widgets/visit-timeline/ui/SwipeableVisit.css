@@ -25,11 +25,12 @@
 .SwipeableVisit-Wrapper {
   overflow: hidden;
   border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
 }
 
 .SwipeableVisit-DeleteBg {
   position: absolute;
-  right: 0;
+  right: 1px;
   top: 0;
   bottom: 0;
   width: 6rem;
@@ -56,17 +57,6 @@
   background-color: var(--color-surface);
   transform: translateX(calc(var(--swipe-offset, 0) * -1px));
   transition: transform 0.2s ease;
-}
-
-.SwipeableVisit-Content::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 0.5rem;
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.03));
-  pointer-events: none;
 }
 
 .SwipeableVisit-Content_dragging {
