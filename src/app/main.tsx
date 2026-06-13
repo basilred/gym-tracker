@@ -11,6 +11,7 @@ import '@/features/mark-visit/ui/MarkVisitButton.css';
 import '@/widgets/visit-timeline/ui/VisitTimeline.css';
 import '@/widgets/visit-timeline/ui/SwipeableVisit.css';
 import '@/shared/ui/ErrorBoundary/ErrorBoundary.css';
+import '@/shared/ui/InlineEdit/InlineEdit.css';
 import App from './App';
 
 createRoot(document.getElementById('root')!).render(
