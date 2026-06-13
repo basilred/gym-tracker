@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import type { Subscription } from '@/entities/subscription';
 import { calcProgress, useSubscriptions } from '@/entities/subscription';
 import { useInlineEdit } from '@/shared/hooks/useInlineEdit';
+import { InlineEdit } from '@/shared/ui/InlineEdit';
 
 const card = cn('SubscriptionCard');
 
@@ -17,24 +18,10 @@ export default function SubscriptionCard({ sub }: SubscriptionCardProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
-  const {
-    editing,
-    editValue,
-    setEditValue,
-    textareaRef,
-    startEditing: startEdit,
-    commitEdit,
-    handleKeyDown,
-    autoResize,
-  } = useInlineEdit(sub.name, (name) => updateSubscription(sub.id, { name }));
+  const hook = useInlineEdit(sub.name, (name) => updateSubscription(sub.id, { name }));
 
   const remaining = sub.totalSessions - sub.visits.length;
   const progress = calcProgress(sub.visits.length, sub.totalSessions);
-
-  const startEditing = (e: React.MouseEvent | React.KeyboardEvent) => {
-    e.preventDefault();
-    startEdit();
-  };
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,23 +84,7 @@ export default function SubscriptionCard({ sub }: SubscriptionCardProps) {
           </div>
         )}
       </div>
-      {editing ? (
-        <textarea
-          ref={textareaRef}
-          className={card('EditInput')}
-          value={editValue}
-          onChange={(e) => { setEditValue(e.target.value); autoResize(); }}
-          onKeyDown={handleKeyDown}
-          onBlur={commitEdit}
-          rows={1}
-        />
-      ) : (
-        <h3 className={card('Title')}>
-          <button className={card('TitleEditTrigger')} onClick={startEditing} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') startEditing(e); }}>
-            {sub.name}
-          </button>
-        </h3>
-      )}
+      <InlineEdit hook={hook} value={sub.name} as="h3" />
       <Link to={`/subscription/${sub.id}`} className={card('Link')}>
         <p className={card('Date')}>
           С {new Date(sub.startDate).toLocaleDateString()}

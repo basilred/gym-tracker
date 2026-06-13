@@ -5,6 +5,7 @@ import { MarkVisitButton } from '@/features/mark-visit';
 import { useSubscriptions } from '@/entities/subscription';
 import { calcProgress } from '@/entities/subscription';
 import { useInlineEdit } from '@/shared/hooks/useInlineEdit';
+import { InlineEdit } from '@/shared/ui/InlineEdit';
 
 const detail = cn('SubscriptionDetail');
 
@@ -16,16 +17,7 @@ export default function SubscriptionDetail({ subId }: SubscriptionDetailProps) {
   const { getSubscription, removeVisit, editVisit, updateSubscription } = useSubscriptions();
   const sub = getSubscription(subId);
 
-  const {
-    editing,
-    editValue,
-    setEditValue,
-    textareaRef,
-    startEditing,
-    commitEdit,
-    handleKeyDown,
-    autoResize,
-  } = useInlineEdit(sub?.name ?? '', (name) => {
+  const hook = useInlineEdit(sub?.name ?? '', (name) => {
     if (sub) {
       updateSubscription(sub.id, { name });
     }
@@ -34,36 +26,13 @@ export default function SubscriptionDetail({ subId }: SubscriptionDetailProps) {
   const remaining = sub ? sub.totalSessions - sub.visits.length : 0;
   const progress = sub ? calcProgress(sub.visits.length, sub.totalSessions) : 0;
 
-  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      startEditing();
-    }
-  };
-
   if (!sub) {
     return null;
   }
 
   return (
     <div className={detail()}>
-      {editing ? (
-        <textarea
-          ref={textareaRef}
-          className={detail('EditInput')}
-          value={editValue}
-          onChange={(e) => { setEditValue(e.target.value); autoResize(); }}
-          onKeyDown={handleKeyDown}
-          onBlur={commitEdit}
-          rows={1}
-        />
-      ) : (
-        <h2 className={detail('Title')}>
-          <span className={detail('TitleEditTrigger')} onClick={startEditing} onKeyDown={handleTitleKeyDown} role="button" tabIndex={0}>
-            {sub.name}
-          </span>
-        </h2>
-      )}
+      <InlineEdit hook={hook} value={sub.name} as="h2" />
       <p className={detail('Date')}>
         Начало: {new Date(sub.startDate).toLocaleDateString()}
       </p>
