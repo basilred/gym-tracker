@@ -1,80 +1,26 @@
 import { useState, useEffect, createContext, useContext, createElement, type ReactNode } from 'react';
+import { getSubscriptions, replaceAllSubscriptions, migrateFromLocalStorage } from '@/shared/lib/storage';
 import type { Subscription } from './types';
 
-const STORAGE_KEY = 'gym_subscriptions';
-const SCHEMA_VERSION = 1;
-
-interface StoredData {
-  _schemaVersion: number;
-  data: Subscription[];
-}
-
-function isValidSubscriptionArray(data: unknown): data is Subscription[] {
-  if (!Array.isArray(data)) return false;
-  return data.every(
-    (item) =>
-      typeof item === 'object' &&
-      item !== null &&
-      typeof (item as Subscription).id === 'string' &&
-      typeof (item as Subscription).name === 'string' &&
-      typeof (item as Subscription).totalSessions === 'number' &&
-      typeof (item as Subscription).startDate === 'string' &&
-      Array.isArray((item as Subscription).visits)
-  );
-}
-
-function loadFromStorage(): Subscription[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-
-    const parsed: unknown = JSON.parse(raw);
-
-    if (
-      typeof parsed === 'object' &&
-      parsed !== null &&
-      '_schemaVersion' in parsed &&
-      (parsed as StoredData)._schemaVersion === SCHEMA_VERSION &&
-      'data' in parsed
-    ) {
-      const data = (parsed as StoredData).data;
-      if (isValidSubscriptionArray(data)) {
-        return data;
-      }
-    }
-
-    if (isValidSubscriptionArray(parsed)) {
-      return parsed;
-    }
-
-    console.warn('Невалидная структура данных в localStorage, сброс');
-    localStorage.removeItem(STORAGE_KEY);
-    return [];
-  } catch {
-    localStorage.removeItem(STORAGE_KEY);
-    return [];
-  }
-}
-
-function saveToStorage(subscriptions: Subscription[]): void {
-  try {
-    const payload: StoredData = {
-      _schemaVersion: SCHEMA_VERSION,
-      data: subscriptions,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  } catch {
-    console.warn('Не удалось сохранить данные в localStorage');
-  }
-}
-
 function useSubscriptionsInternal() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(loadFromStorage);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => {
-    saveToStorage(subscriptions);
-  }, [subscriptions]);
+    migrateFromLocalStorage()
+      .then(() => getSubscriptions())
+      .then((data) => {
+        setSubscriptions(data);
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    replaceAllSubscriptions(subscriptions).catch(() => {});
+  }, [subscriptions, loaded]);
 
   const addSubscription = (name: string, totalSessions: number, startDate: string): void => {
     const newSub: Subscription = {
@@ -88,7 +34,7 @@ function useSubscriptionsInternal() {
     setAnnouncement('Абонемент создан');
   };
 
-  const deleteSubscription = (id: string): void => {
+  const handleDelete = (id: string): void => {
     setSubscriptions((prev) => prev.filter((s) => s.id !== id));
     setAnnouncement('Абонемент удалён');
   };
@@ -156,9 +102,10 @@ function useSubscriptionsInternal() {
 
   return {
     subscriptions,
+    loaded,
     announcement,
     addSubscription,
-    deleteSubscription,
+    deleteSubscription: handleDelete,
     updateSubscription,
     addVisit,
     removeVisit,

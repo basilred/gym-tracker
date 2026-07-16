@@ -1,22 +1,12 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { useSubscriptions, SubscriptionProvider } from './useSubscriptions';
 
 const STORAGE_KEY = 'gym_subscriptions';
 
-function setStorage(data: unknown) {
+function setLocalStorage(data: unknown) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function getStorageData() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return [] as Record<string, unknown>[];
-  const parsed = JSON.parse(raw);
-  if (parsed && typeof parsed === 'object' && 'data' in parsed) {
-    return (parsed as { data: Record<string, unknown>[] }).data;
-  }
-  return [] as Record<string, unknown>[];
 }
 
 function renderSubscriptionHook() {
@@ -32,12 +22,12 @@ describe('useSubscriptions', () => {
   });
 
   describe('initialization', () => {
-    it('returns empty array when localStorage is empty', () => {
+    it('starts with empty array', () => {
       const { result } = renderSubscriptionHook();
       expect(result.current.subscriptions).toEqual([]);
     });
 
-    it('loads valid subscriptions from localStorage', () => {
+    it('loads subscriptions from IndexedDB after migration', async () => {
       const sub = {
         id: 'test-1',
         name: 'Test Sub',
@@ -45,18 +35,14 @@ describe('useSubscriptions', () => {
         startDate: '2026-01-01',
         visits: [{ id: 'v1', date: '2026-01-02T10:00:00.000Z' }],
       };
-      setStorage([sub]);
+      setLocalStorage([sub]);
 
       const { result } = renderSubscriptionHook();
-      expect(result.current.subscriptions).toHaveLength(1);
+
+      await waitFor(() => {
+        expect(result.current.subscriptions).toHaveLength(1);
+      });
       expect(result.current.subscriptions[0].name).toBe('Test Sub');
-    });
-
-    it('returns empty array when JSON is invalid', () => {
-      localStorage.setItem(STORAGE_KEY, 'not-valid-json{{{');
-
-      const { result } = renderSubscriptionHook();
-      expect(result.current.subscriptions).toEqual([]);
     });
   });
 
@@ -252,36 +238,6 @@ describe('useSubscriptions', () => {
     });
   });
 
-  describe('localStorage persistence', () => {
-    it('persists subscriptions to localStorage on changes', () => {
-      const { result } = renderSubscriptionHook();
-
-      act(() => {
-        result.current.addSubscription('Test', 8, '2026-01-01');
-      });
-
-      const stored = getStorageData();
-      expect(stored).toHaveLength(1);
-      expect(stored[0].name).toBe('Test');
-    });
-
-    it('removes deleted subscription from localStorage', () => {
-      const { result } = renderSubscriptionHook();
-
-      act(() => {
-        result.current.addSubscription('Test', 8, '2026-01-01');
-      });
-      const id = result.current.subscriptions[0].id;
-
-      act(() => {
-        result.current.deleteSubscription(id);
-      });
-
-      const stored = getStorageData();
-      expect(stored).toHaveLength(0);
-    });
-  });
-
   describe('updateSubscription', () => {
     it('updates subscription name', () => {
       const { result } = renderSubscriptionHook();
@@ -364,27 +320,6 @@ describe('useSubscriptions', () => {
 
       expect(result.current.subscriptions[0].name).toBe('Updated A');
       expect(result.current.subscriptions[1].name).toBe('B');
-    });
-  });
-
-  describe('storage error handling', () => {
-    it('handles quota exceeded gracefully', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-      const originalSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = vi.fn(() => {
-        throw new Error('QuotaExceededError');
-      });
-
-      const { result } = renderSubscriptionHook();
-
-      act(() => {
-        result.current.addSubscription('Test', 8, '2026-01-01');
-      });
-
-      expect(warnSpy).toHaveBeenCalledWith('Не удалось сохранить данные в localStorage');
-      Storage.prototype.setItem = originalSetItem;
-      warnSpy.mockRestore();
     });
   });
 });

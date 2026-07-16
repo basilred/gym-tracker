@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -54,21 +54,31 @@ describe('SubscriptionPage', () => {
     expect(screen.getByText('Абонемент не найден.')).toBeInTheDocument();
   });
 
-  it('renders subscription details when found', () => {
+  it('renders subscription details when found', async () => {
     seedSubscription();
     renderPage('/subscription/sub-1');
-    expect(screen.getByText('Test Gym')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Gym')).toBeInTheDocument();
+    });
   });
 
-  it('renders back link', () => {
+  it('renders back link', async () => {
     seedSubscription();
     renderPage('/subscription/sub-1');
-    expect(screen.getByRole('link', { name: 'Вернуться на главную' })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: 'Вернуться на главную' })).toBeInTheDocument();
+    });
   });
 
   it('can add a visit', async () => {
     seedSubscription();
     renderPage('/subscription/sub-1');
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Отметить занятие' })).toBeInTheDocument();
+    });
 
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'Отметить занятие' }));
@@ -79,6 +89,10 @@ describe('SubscriptionPage', () => {
   it('can edit subscription name inline', async () => {
     seedSubscription();
     renderPage('/subscription/sub-1');
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Gym')).toBeInTheDocument();
+    });
 
     const user = userEvent.setup();
     await user.click(screen.getByText('Test Gym'));
