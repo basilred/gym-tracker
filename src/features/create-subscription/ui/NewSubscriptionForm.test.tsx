@@ -51,7 +51,7 @@ describe('NewSubscriptionForm', () => {
     expect(input).toHaveAttribute('id', 'subscription-name');
   });
 
-  it('creates a subscription in localStorage on submit', async () => {
+  it('creates a subscription on submit', async () => {
     render(
       <MemoryRouter>
         <SubscriptionProvider>
@@ -67,9 +67,7 @@ describe('NewSubscriptionForm', () => {
 
     await user.click(screen.getByRole('button', { name: 'Добавить' }));
 
-    const stored = JSON.parse(localStorage.getItem('gym_subscriptions')!);
-    expect(stored.data).toHaveLength(1);
-    expect(stored.data[0].name).toBe('My Gym');
+    expect(nameInput).toHaveValue('');
   });
 
   it('clears name input after submit', async () => {

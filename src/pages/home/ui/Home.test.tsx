@@ -86,7 +86,7 @@ describe('Home', () => {
 
     expect(screen.getByText('Delete Me')).toBeInTheDocument();
 
-    const menuButton = screen.getByRole('button', { name: 'Меню' });
+    const menuButton = screen.getAllByRole('button', { name: 'Меню' }).at(-1)!;
     await user.click(menuButton);
 
     const deleteButton = screen.getByRole('button', { name: 'Удалить абонемент' });
