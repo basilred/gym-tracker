@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home } from '@/pages/home';
 import { SubscriptionPage } from '@/pages/subscription-page';
+import { useNotifications } from '@/features/notifications';
 import { useSubscriptions, SubscriptionProvider } from '@/entities/subscription';
 import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 
@@ -14,12 +15,18 @@ function Announcements() {
   );
 }
 
+function NotificationsGate() {
+  useNotifications();
+  return null;
+}
+
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.DEV ? '/' : '/gym-tracker/'}>
       <SubscriptionProvider>
         <ErrorBoundary>
           <Announcements />
+          <NotificationsGate />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/subscription/:id" element={<SubscriptionPage />} />

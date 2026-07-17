@@ -12,6 +12,7 @@ import '@/widgets/visit-timeline/ui/VisitTimeline.css';
 import '@/widgets/visit-timeline/ui/SwipeableVisit.css';
 import '@/shared/ui/ErrorBoundary/ErrorBoundary.css';
 import '@/shared/ui/InlineEdit/InlineEdit.css';
+import '@/features/notifications/ui/NotificationSettings.css';
 import App from './App';
 
 createRoot(document.getElementById('root')!).render(
