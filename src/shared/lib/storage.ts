@@ -83,6 +83,17 @@ export async function replaceAllSubscriptions(subscriptions: Subscription[]): Pr
   await tx.done;
 }
 
+export async function getMeta<T>(key: string): Promise<T | undefined> {
+  const db = await getDb();
+  const record = await db.get(STORE_META, key);
+  return record?.value as T | undefined;
+}
+
+export async function setMeta(key: string, value: unknown): Promise<void> {
+  const db = await getDb();
+  await db.put(STORE_META, { key, value });
+}
+
 export async function migrateFromLocalStorage(): Promise<boolean> {
   const db = await getDb();
 
