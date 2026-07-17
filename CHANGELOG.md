@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.2.0...gym-tracker-v1.3.0) (2026-07-17)
+
+
+### Features
+
+* add basic subscription statistics block ([#47](https://github.com/basilred/gym-tracker/issues/47)) ([5b279ef](https://github.com/basilred/gym-tracker/commit/5b279ef01a11b18072ccc8ed7178b609e8a43193))
+* add notification detection engine, hook, and settings UI ([#56](https://github.com/basilred/gym-tracker/issues/56)) ([6cfb628](https://github.com/basilred/gym-tracker/commit/6cfb628a03d0d9c839bdacf537fe0e8c4172d8a8))
+* migrate subscriptions to IndexedDB and add notification announcement ([#55](https://github.com/basilred/gym-tracker/issues/55)) ([a16cbbf](https://github.com/basilred/gym-tracker/commit/a16cbbfaa5721a40e85a93aba3c62159e0a15f91))
+
+
+### Bug Fixes
+
+* eliminate red Delete button visual bleed in SwipeableVisit ([#50](https://github.com/basilred/gym-tracker/issues/50)) ([43191ca](https://github.com/basilred/gym-tracker/commit/43191ca9e0d2d9821cda7fc72ad518b7f46026af))
+
 ## [1.2.0](https://github.com/basilred/gym-tracker/compare/gym-tracker-v1.1.0...gym-tracker-v1.2.0) (2026-06-10)
 
 
